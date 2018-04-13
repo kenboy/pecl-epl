@@ -1,0 +1,7 @@
+ARG_ENABLE('underscore', 'underscore support', 'no');
+
+if (PHP_UNDERSCORE != 'no') {
+	AC_DEFINE('HAVE_UNDERSCORE', 1, 'underscore support enabled');
+
+	EXTENSION('underscore', 'underscore.c');
+}
