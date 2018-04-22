@@ -318,16 +318,40 @@ static PHP_FUNCTION(underscore_difference_with)
  */
 static PHP_FUNCTION(underscore_drop)
 {
-	zval *array;
-	zval *args;
-    int argc;
+	zval *array, *entry;
+	zend_long n = 1, num_key;
+	zend_string *string_key;
+	int num_in, pos;
 
 	ZEND_PARSE_PARAMETERS_START(1, -1)
 		Z_PARAM_ARRAY(array)
-		Z_PARAM_VARIADIC('+', args, argc)
+		Z_PARAM_OPTIONAL
+		Z_PARAM_LONG(n)
 	ZEND_PARSE_PARAMETERS_END();
 
-	array_init(return_value);
+	num_in = zend_hash_num_elements(Z_ARRVAL_P(array));
+
+	if (n > num_in || n < 0) {
+		array_init(return_value);
+		return;
+	}
+
+	/* Initialize returned array */
+	array_init_size(return_value, (uint32_t)(num_in - n));
+
+	pos = 0;
+	ZEND_HASH_FOREACH_KEY_VAL(Z_ARRVAL_P(array), num_key, string_key, entry) {
+		pos++;
+		if (pos <= n) {
+			continue;
+		}
+
+		if (string_key) {
+			entry = zend_hash_add_new(Z_ARRVAL_P(return_value), string_key, entry);
+		} else {
+			entry = zend_hash_index_add_new(Z_ARRVAL_P(return_value), num_key, entry);
+		}
+	} ZEND_HASH_FOREACH_END();
 }
 /* }}} */
 
@@ -383,7 +407,7 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_underscore_drop, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
-	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
+	ZEND_ARG_VARIADIC_TYPE_INFO(0, n, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 /* }}} */
 
