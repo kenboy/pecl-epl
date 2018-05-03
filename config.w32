@@ -1,7 +1,7 @@
-ARG_ENABLE('underscore', 'underscore support', 'no');
+ARG_ENABLE('epl', 'epl support', 'no');
 
-if (PHP_UNDERSCORE != 'no') {
-	AC_DEFINE('HAVE_UNDERSCORE', 1, 'underscore support enabled');
+if (PHP_EPL != 'no') {
+	AC_DEFINE('HAVE_EPL', 1, 'epl support enabled');
 
-	EXTENSION('underscore', 'underscore.c');
+	EXTENSION('epl', 'epl.c');
 }

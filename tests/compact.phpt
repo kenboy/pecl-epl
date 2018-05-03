@@ -2,13 +2,13 @@
 chunk
 --SKIPIF--
 <?php
-if (!extension_loaded('underscore')) {
+if (!extension_loaded('epl')) {
 	echo 'skip';
 }
 ?>
 --FILE--
 <?php 
-var_dump(\_\compact([0, 1, false, 2, '', 3]));
+var_dump(\epl\compact([0, 1, false, 2, '', 3]));
 ?>
 --EXPECT--
 array(3) {

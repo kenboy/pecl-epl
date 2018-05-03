@@ -1,4 +1,4 @@
-/* underscore extension for PHP */
+/* epl extension for PHP */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -6,12 +6,13 @@
 
 #include "php.h"
 #include "zend_operators.h"
+#include "zend_closures.h"
 #include "ext/standard/info.h"
-#include "php_underscore.h"
+#include "php_epl.h"
 
 /* {{{ array chunk(array $array [, $size = 1])
  */
-static PHP_FUNCTION(underscore_chunk)
+static PHP_FUNCTION(epl_chunk)
 {
 	zval *array, *zval_value, chunk;
 	zend_long size = 1, array_count, current = 0;
@@ -65,7 +66,7 @@ static PHP_FUNCTION(underscore_chunk)
 
 /* {{{ array compact(array $array)
  */
-static PHP_FUNCTION(underscore_compact)
+static PHP_FUNCTION(epl_compact)
 {
 	zval *array, *value;
 	zend_string *key;
@@ -94,7 +95,7 @@ static PHP_FUNCTION(underscore_compact)
 
 /* {{{ array difference(array $array)
  */
-static PHP_FUNCTION(underscore_difference)
+static PHP_FUNCTION(epl_difference)
 {
 	zval *array, *args, *value, dummy;
     int argc, num = 0, i;
@@ -158,7 +159,7 @@ static PHP_FUNCTION(underscore_difference)
 
 /* {{{ array differenceBy(array $array)
  */
-static PHP_FUNCTION(underscore_difference_by)
+static PHP_FUNCTION(epl_difference_by)
 {
 	zval *array, *args, *value, dummy, retval;
     int argc, i, num = 0;
@@ -250,7 +251,7 @@ static PHP_FUNCTION(underscore_difference_by)
 
 /* {{{ array differenceWith(array $array)
  */
-static PHP_FUNCTION(underscore_difference_with)
+static PHP_FUNCTION(epl_difference_with)
 {
 	zval *array, *args, *arr_value, *oth_value, retval;
     int argc, i;
@@ -316,7 +317,7 @@ static PHP_FUNCTION(underscore_difference_with)
 
 /* {{{ array drop(array $array, $n = 1)
  */
-static PHP_FUNCTION(underscore_drop)
+static PHP_FUNCTION(epl_drop)
 {
 	zval *array, *entry;
 	zend_long n = 1, num_key;
@@ -356,7 +357,7 @@ static PHP_FUNCTION(underscore_drop)
 
 /* {{{ array dropWhile(array $array, callable $predicate)
  */
-static PHP_FUNCTION(underscore_drop_while)
+static PHP_FUNCTION(epl_drop_while)
 {
 	zval *array, *entry, retval, key;
 	zend_long num_key;
@@ -408,7 +409,7 @@ static PHP_FUNCTION(underscore_drop_while)
 
 /* {{{ array dropRight(array $array, $n = 1)
  */
-static PHP_FUNCTION(underscore_drop_right)
+static PHP_FUNCTION(epl_drop_right)
 {
 	zval *array, *entry;
 	zend_long n = 1, num_key;
@@ -451,7 +452,7 @@ static PHP_FUNCTION(underscore_drop_right)
 
 /* {{{ array dropRightWhile(array $array, callable $predicate)
  */
-static PHP_FUNCTION(underscore_drop_right_while)
+static PHP_FUNCTION(epl_drop_right_while)
 {
 	zval *array, *entry, retval, key;
 	zend_long num_key;
@@ -501,11 +502,48 @@ static PHP_FUNCTION(underscore_drop_right_while)
 }
 /* }}} */
 
+static ZEND_NAMED_FUNCTION(epl_before_call_magic) /* {{{ */ 
+{
+	zval *args;
+    int argc;
+
+	ZEND_PARSE_PARAMETERS_START(1, -1)
+		Z_PARAM_VARIADIC_EX('+', args, argc, 1)
+	ZEND_PARSE_PARAMETERS_END();
+
+	RETURN_TRUE
+}
+/* }}} */
+
+/* {{{ array before(int $n, callable $func)
+ */
+static PHP_FUNCTION(epl_before)
+{
+	zval instance;
+	zend_long n;
+	zend_fcall_info fci;
+	zend_fcall_info_cache fci_cache;
+	zend_function *mptr;
+	zend_function call;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_LONG(n)
+		Z_PARAM_FUNC(fci, fci_cache)
+	ZEND_PARSE_PARAMETERS_END();
+
+	mptr = fci_cache.function_handler;
+	mptr->type = ZEND_INTERNAL_FUNCTION;
+	mptr->internal_function.handler = epl_before_call_magic;
+
+	zend_create_fake_closure(return_value, mptr, NULL, NULL, NULL);
+}
+/* }}} */
+
 /* {{{ PHP_RINIT_FUNCTION
  */
-PHP_RINIT_FUNCTION(underscore)
+PHP_RINIT_FUNCTION(epl)
 {
-#if defined(ZTS) && defined(COMPILE_DL_UNDERSCORE)
+#if defined(ZTS) && defined(COMPILE_DL_EPL)
 	ZEND_TSRMLS_CACHE_UPDATE();
 #endif
 
@@ -515,98 +553,104 @@ PHP_RINIT_FUNCTION(underscore)
 
 /* {{{ PHP_MINFO_FUNCTION
  */
-PHP_MINFO_FUNCTION(underscore)
+PHP_MINFO_FUNCTION(epl)
 {
 	php_info_print_table_start();
-	php_info_print_table_header(2, "underscore support", "enabled");
+	php_info_print_table_header(2, "epl support", "enabled");
 	php_info_print_table_end();
 }
 /* }}} */
 
 /* {{{ arginfo
  */
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_underscore_chunk, IS_ARRAY, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_chunk, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, size, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_underscore_compact, IS_ARRAY, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_compact, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_underscore_difference, IS_ARRAY, 0)
-	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
-	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_underscore_difference_by, IS_ARRAY, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_difference, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
 	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
-	ZEND_ARG_CALLABLE_INFO(0, iteratee, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_underscore_difference_with, IS_ARRAY, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_difference_by, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
 	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
 	ZEND_ARG_CALLABLE_INFO(0, iteratee, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_underscore_drop, IS_ARRAY, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_difference_with, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
-	ZEND_ARG_VARIADIC_TYPE_INFO(0, n, IS_LONG, 0)
+	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
+	ZEND_ARG_CALLABLE_INFO(0, iteratee, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_underscore_drop_while, IS_ARRAY, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_drop, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, n, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_drop_while, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
 	ZEND_ARG_CALLABLE_INFO(0, predicate, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_underscore_drop_right, IS_ARRAY, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_drop_right, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
-	ZEND_ARG_VARIADIC_TYPE_INFO(0, n, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, n, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_underscore_drop_right_while, IS_ARRAY, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_drop_right_while, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
 	ZEND_ARG_CALLABLE_INFO(0, predicate, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO(arginfo_epl_before, Closure, 0)
+	ZEND_ARG_TYPE_INFO(0, n, IS_LONG, 0)
+	ZEND_ARG_CALLABLE_INFO(0, func, 0)
 ZEND_END_ARG_INFO()
 /* }}} */
 
-/* {{{ underscore_functions[]
+/* {{{ epl_functions[]
  */
-static const zend_function_entry underscore_functions[] = {
-	ZEND_NS_NAMED_FE("_", chunk, ZEND_FN(underscore_chunk), arginfo_underscore_chunk)
-	ZEND_NS_NAMED_FE("_", compact, ZEND_FN(underscore_compact), arginfo_underscore_compact)
-	ZEND_NS_NAMED_FE("_", difference, ZEND_FN(underscore_difference), arginfo_underscore_difference)
-	ZEND_NS_NAMED_FE("_", differenceBy, ZEND_FN(underscore_difference_by), arginfo_underscore_difference_by)
-	ZEND_NS_NAMED_FE("_", differenceWith, ZEND_FN(underscore_difference_with), arginfo_underscore_difference_with)
-	ZEND_NS_NAMED_FE("_", drop, ZEND_FN(underscore_drop), arginfo_underscore_drop)
-	ZEND_NS_NAMED_FE("_", dropWhile, ZEND_FN(underscore_drop_while), arginfo_underscore_drop_while)
-	ZEND_NS_NAMED_FE("_", dropRight, ZEND_FN(underscore_drop_right), arginfo_underscore_drop_right)
-	ZEND_NS_NAMED_FE("_", dropRightWhile, ZEND_FN(underscore_drop_right_while), arginfo_underscore_drop_right_while)
+static const zend_function_entry epl_functions[] = {
+	ZEND_NS_NAMED_FE("epl", chunk, ZEND_FN(epl_chunk), arginfo_epl_chunk)
+	ZEND_NS_NAMED_FE("epl", compact, ZEND_FN(epl_compact), arginfo_epl_compact)
+	ZEND_NS_NAMED_FE("epl", difference, ZEND_FN(epl_difference), arginfo_epl_difference)
+	ZEND_NS_NAMED_FE("epl", differenceBy, ZEND_FN(epl_difference_by), arginfo_epl_difference_by)
+	ZEND_NS_NAMED_FE("epl", differenceWith, ZEND_FN(epl_difference_with), arginfo_epl_difference_with)
+	ZEND_NS_NAMED_FE("epl", drop, ZEND_FN(epl_drop), arginfo_epl_drop)
+	ZEND_NS_NAMED_FE("epl", dropWhile, ZEND_FN(epl_drop_while), arginfo_epl_drop_while)
+	ZEND_NS_NAMED_FE("epl", dropRight, ZEND_FN(epl_drop_right), arginfo_epl_drop_right)
+	ZEND_NS_NAMED_FE("epl", dropRightWhile, ZEND_FN(epl_drop_right_while), arginfo_epl_drop_right_while)
+	ZEND_NS_NAMED_FE("epl", before, ZEND_FN(epl_before), arginfo_epl_before)
 	PHP_FE_END
 };
 /* }}} */
 
-/* {{{ underscore_module_entry
+/* {{{ epl_module_entry
  */
-zend_module_entry underscore_module_entry = {
+zend_module_entry epl_module_entry = {
 	STANDARD_MODULE_HEADER,
-	"underscore",					/* Extension name */
-	underscore_functions,			/* zend_function_entry */
-	NULL,							/* PHP_MINIT - Module initialization */
-	NULL,							/* PHP_MSHUTDOWN - Module shutdown */
-	PHP_RINIT(underscore),			/* PHP_RINIT - Request initialization */
-	NULL,							/* PHP_RSHUTDOWN - Request shutdown */
-	PHP_MINFO(underscore),			/* PHP_MINFO - Module info */
-	PHP_UNDERSCORE_VERSION,		/* Version */
+	"epl",					/* Extension name */
+	epl_functions,			/* zend_function_entry */
+	NULL,					/* PHP_MINIT - Module initialization */
+	NULL,					/* PHP_MSHUTDOWN - Module shutdown */
+	PHP_RINIT(epl),			/* PHP_RINIT - Request initialization */
+	NULL,					/* PHP_RSHUTDOWN - Request shutdown */
+	PHP_MINFO(epl),			/* PHP_MINFO - Module info */
+	PHP_EPL_VERSION,		/* Version */
 	STANDARD_MODULE_PROPERTIES
 };
 /* }}} */
 
-#ifdef COMPILE_DL_UNDERSCORE
+#ifdef COMPILE_DL_EPL
 # ifdef ZTS
 ZEND_TSRMLS_CACHE_DEFINE()
 # endif
-ZEND_GET_MODULE(underscore)
+ZEND_GET_MODULE(epl)
 #endif

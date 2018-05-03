@@ -2,16 +2,16 @@
 chunk
 --SKIPIF--
 <?php
-if (!extension_loaded('underscore')) {
+if (!extension_loaded('epl')) {
 	echo 'skip';
 }
 ?>
 --FILE--
 <?php 
-var_dump(\_\drop([1, 2, 3]));
-var_dump(\_\drop([1, 2, 3], 2));
-var_dump(\_\drop([1, 2, 3], 5));
-var_dump(\_\drop([1, 2, 3], 0));
+var_dump(\epl\drop([1, 2, 3]));
+var_dump(\epl\drop([1, 2, 3], 2));
+var_dump(\epl\drop([1, 2, 3], 5));
+var_dump(\epl\drop([1, 2, 3], 0));
 ?>
 --EXPECT--
 array(2) {

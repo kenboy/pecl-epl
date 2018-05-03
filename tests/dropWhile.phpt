@@ -2,7 +2,7 @@
 chunk
 --SKIPIF--
 <?php
-if (!extension_loaded('underscore')) {
+if (!extension_loaded('epl')) {
 	echo 'skip';
 }
 ?>
@@ -14,7 +14,7 @@ $users = [
   [ 'user' => 'pebbles', 'active' => true ]
 ];
 
-var_dump(\_\dropWhile($users, function($user) { return !$user['active']; }));
+var_dump(\epl\dropWhile($users, function($user) { return !$user['active']; }));
 ?>
 --EXPECT--
 array(1) {
