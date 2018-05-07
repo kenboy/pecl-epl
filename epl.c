@@ -10,86 +10,121 @@
 #include "ext/standard/info.h"
 #include "php_epl.h"
 
-/* {{{ array chunk(array $array [, $size = 1])
- */
-static PHP_FUNCTION(epl_chunk)
+static void internal_chunk(zval *return_value, zend_long size)
 {
-	zval *array, *zval_value, chunk;
-	zend_long size = 1, array_count, current = 0;
-	zend_string *str_key;
+	zval *value, chunk, tmp;
+	zend_long array_count, current = 0;
+	zend_string *string_key;
 	zend_ulong num_key;
-
-	ZEND_PARSE_PARAMETERS_START(1, 2)
-		Z_PARAM_ARRAY(array)
-		Z_PARAM_OPTIONAL
-		Z_PARAM_LONG(size)
-	ZEND_PARSE_PARAMETERS_END();
 
 	if (size < 1) {
 		php_error_docref(NULL, E_WARNING, "Size parameter expected to be greater than 0");
 		return;
 	}
 
-	array_count = zend_hash_num_elements(Z_ARRVAL_P(array));
+	array_count = zend_hash_num_elements(Z_ARRVAL_P(return_value));
 	if (size > array_count) {
 		php_error_docref(NULL, E_WARNING, "Size parameter expected to be greater than 0");
 		return;
 	}
 
-	array_init_size(return_value, (uint32_t)(((array_count - 1) / size) + 1));
+	array_init_size(&tmp, array_count);
+	zend_hash_copy(Z_ARRVAL(tmp), Z_ARRVAL_P(return_value), NULL);
+	ZVAL_UNDEF(return_value);
 
+	array_init_size(return_value, (uint32_t)(((array_count - 1) / size) + 1));
 	ZVAL_UNDEF(&chunk);
-	ZEND_HASH_FOREACH_KEY_VAL(Z_ARRVAL_P(array), num_key, str_key, zval_value) {
+
+	zend_hash_internal_pointer_reset(Z_ARRVAL(tmp));
+	while (FAILURE != zend_hash_has_more_elements(Z_ARRVAL(tmp))) {
 		if (Z_TYPE(chunk) == IS_UNDEF) {
 			array_init_size(&chunk, (uint32_t)size);
 		}
 
-		if (str_key) {
-			zend_hash_add(Z_ARRVAL(chunk), str_key, zval_value);
-		} else {
-			zend_hash_index_add(Z_ARRVAL(chunk), num_key, zval_value);
+		value = zend_hash_get_current_data(Z_ARRVAL(tmp));
+
+		switch(zend_hash_get_current_key(Z_ARRVAL(tmp), &string_key, &num_key)) {
+			case HASH_KEY_IS_STRING:
+				zend_hash_add(Z_ARRVAL(chunk), string_key, value);
+				break;
+
+			case HASH_KEY_IS_LONG:
+				zend_hash_index_add(Z_ARRVAL(chunk), num_key, value);
+				break;
 		}
-		zval_add_ref(zval_value);
+
+		zval_add_ref(value);
 
 		if (!(++current % size)) {
-				add_next_index_zval(return_value, &chunk);
-				ZVAL_UNDEF(&chunk);
-		}
-	} ZEND_HASH_FOREACH_END();
-
-	/* Add the final chunk if there is one. */
-	if (Z_TYPE(chunk) != IS_UNDEF) {
 			add_next_index_zval(return_value, &chunk);
+			ZVAL_UNDEF(&chunk);
+		}
+
+		zend_hash_move_forward(Z_ARRVAL(tmp));
+	}
+
+	if (Z_TYPE(chunk) != IS_UNDEF) {
+		add_next_index_zval(return_value, &chunk);
 	}
 }
+
+/* {{{ array chunk(array $array [, $size = 1])
+ */
+static PHP_FUNCTION(epl_chunk)
+{
+	zval *value;
+	zend_long size = 1;
+
+	ZEND_PARSE_PARAMETERS_START(1, 2)
+		Z_PARAM_ARRAY(value)
+		Z_PARAM_OPTIONAL
+		Z_PARAM_LONG(size)
+	ZEND_PARSE_PARAMETERS_END();
+
+	internal_chunk(value, size);
+	RETURN_ARR(zend_array_dup(Z_ARRVAL_P(value)))
+}
 /* }}} */
+
+static void internal_compact(zval *return_value)
+{
+	zval *array, *value;
+	zend_string *string_key;
+	zend_ulong num_key;
+
+	zend_hash_internal_pointer_reset(Z_ARRVAL_P(return_value));
+	while (FAILURE != zend_hash_has_more_elements(Z_ARRVAL_P(return_value))) {
+
+		value = zend_hash_get_current_data(Z_ARRVAL_P(return_value));
+
+		if (!zend_is_true(value)) {
+			switch(zend_hash_get_current_key(Z_ARRVAL_P(return_value), &string_key, &num_key)) {
+				case HASH_KEY_IS_STRING:
+					zend_hash_del(Z_ARRVAL_P(return_value), string_key);
+					break;
+
+				case HASH_KEY_IS_LONG:
+					zend_hash_index_del(Z_ARRVAL_P(return_value), num_key);
+					break;
+			}
+		}
+
+		zend_hash_move_forward(Z_ARRVAL_P(return_value));		
+	}
+}
 
 /* {{{ array compact(array $array)
  */
 static PHP_FUNCTION(epl_compact)
 {
-	zval *array, *value;
-	zend_string *key;
-	zend_ulong idx;
+	zval *array;
 
 	ZEND_PARSE_PARAMETERS_START(1, 2)
 		Z_PARAM_ARRAY(array)
 	ZEND_PARSE_PARAMETERS_END();
 
-	array_init(return_value);
-
-	ZEND_HASH_FOREACH_KEY_VAL_IND(Z_ARRVAL_P(array), idx, key, value) {
-		if (!zend_is_true(value)) {
-			continue;
-		}
-
-		if (key) {
-			zend_hash_add(Z_ARRVAL_P(return_value), key, value);
-		} else {
-			zend_hash_index_add(Z_ARRVAL_P(return_value), idx, value);
-		}
-		zval_add_ref(value);
-	} ZEND_HASH_FOREACH_END();	
+	internal_compact(array);
+	RETURN_ARR(zend_array_dup(Z_ARRVAL_P(array)))
 }
 /* }}} */
 
