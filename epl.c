@@ -28,7 +28,6 @@ static void internal_chunk(zval *return_value, zend_long size)
 		return;
 	}
 
-	array_init_size(&tmp, array_count);
 	ZVAL_ARR(&tmp, zend_array_dup(Z_ARRVAL_P(return_value)));
 	ZVAL_UNDEF(return_value);
 
@@ -81,9 +80,7 @@ static PHP_FUNCTION(epl_chunk)
 		Z_PARAM_LONG(size)
 	ZEND_PARSE_PARAMETERS_END();
 
-	array_init_size(return_value, zend_hash_num_elements(Z_ARRVAL_P(array)));
 	ZVAL_ARR(return_value, zend_array_dup(Z_ARRVAL_P(array)));
-
 	internal_chunk(return_value, size);
 }
 /* }}} */
@@ -125,9 +122,7 @@ static PHP_FUNCTION(epl_compact)
 		Z_PARAM_ARRAY(array)
 	ZEND_PARSE_PARAMETERS_END();
 
-	array_init_size(return_value, zend_hash_num_elements(Z_ARRVAL_P(array)));
 	ZVAL_ARR(return_value, zend_array_dup(Z_ARRVAL_P(array)));
-
 	internal_compact(return_value);
 }
 /* }}} */
