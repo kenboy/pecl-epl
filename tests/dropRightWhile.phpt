@@ -18,17 +18,17 @@ var_dump(\epl\dropRightWhile($users, function($user) { return $user['active']; }
 ?>
 --EXPECT--
 array(2) {
-  [2]=>
-  array(2) {
-    ["user"]=>
-    string(7) "pebbles"
-    ["active"]=>
-    bool(true)
-  }
   [1]=>
   array(2) {
     ["user"]=>
     string(4) "fred"
+    ["active"]=>
+    bool(true)
+  }
+  [2]=>
+  array(2) {
+    ["user"]=>
+    string(7) "pebbles"
     ["active"]=>
     bool(true)
   }
