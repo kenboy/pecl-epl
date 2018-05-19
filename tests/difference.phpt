@@ -10,7 +10,7 @@ if (!extension_loaded('epl')) {
 <?php 
 var_dump(
   \epl\difference([2, 1], [2, 3]),
-  (new \epl\collect([2, 1]))->difference()
+  (new \epl\collect([2, 1]))->difference([2, 3])
 );
 ?>
 --EXPECT--
