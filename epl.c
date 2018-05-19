@@ -10,6 +10,9 @@
 #include "ext/standard/info.h"
 #include "php_epl.h"
 
+/* Class entry pointers */
+PHPAPI zend_class_entry *collect_ptr;
+
 static void internal_chunk(zval *return_value, zend_long size)
 {
 	zval *value, chunk, tmp;
@@ -69,9 +72,9 @@ static void internal_chunk(zval *return_value, zend_long size)
 
 /* {{{ array chunk(array $array [, $size = 1])
  */
-static PHP_FUNCTION(epl_chunk)
+static ZEND_FUNCTION(epl_chunk)
 {
-	zval *array, tmp;
+	zval *array;
 	zend_long size = 1;
 
 	ZEND_PARSE_PARAMETERS_START(1, 2)
@@ -82,6 +85,25 @@ static PHP_FUNCTION(epl_chunk)
 
 	ZVAL_ARR(return_value, zend_array_dup(Z_ARRVAL_P(array)));
 	internal_chunk(return_value, size);
+}
+/* }}} */
+
+/* {{{ collect::chunk([$size = 1])
+ */
+static ZEND_METHOD(collect, chunk)
+{
+	zval *array, rv;
+	zend_long size = 1;
+
+	ZEND_PARSE_PARAMETERS_START(0, 1)
+		Z_PARAM_OPTIONAL
+		Z_PARAM_LONG(size)
+	ZEND_PARSE_PARAMETERS_END();
+
+	array = zend_read_property(collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	internal_chunk(array, size);
+
+	RETURN_ZVAL(getThis(), 1, 0);
 }
 /* }}} */
 
@@ -112,9 +134,22 @@ static void internal_compact(zval *return_value)
 	}
 }
 
+/* {{{ collect::compact()
+ */
+static ZEND_METHOD(collect, compact)
+{
+	zval *array, rv;
+
+	array = zend_read_property(collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	internal_compact(array);
+
+	RETURN_ZVAL(getThis(), 1, 0);
+}
+/* }}} */
+
 /* {{{ array compact(array $array)
  */
-static PHP_FUNCTION(epl_compact)
+static ZEND_FUNCTION(epl_compact)
 {
 	zval *array;
 
@@ -188,14 +223,32 @@ static void internal_difference(zval *return_value, zval *args, int argc)
 	zend_hash_destroy(&exclude);
 }
 
-/* {{{ array difference(array $array)
+/* {{{ collect::difference(array $array [, array $... ])
  */
-static PHP_FUNCTION(epl_difference)
+static ZEND_METHOD(collect, difference)
+{
+	zval *array, *args, rv;
+    int argc;
+
+	ZEND_PARSE_PARAMETERS_START(1, -1)
+		Z_PARAM_VARIADIC('+', args, argc)
+	ZEND_PARSE_PARAMETERS_END_EX(RETURN_ZVAL(getThis(), 1, 0));
+
+	array = zend_read_property(collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	internal_difference(array, args, argc);
+
+	RETURN_ZVAL(getThis(), 1, 0);
+}
+/* }}} */
+
+/* {{{ array difference(array $array, array $... [, array $... ])
+ */
+static ZEND_FUNCTION(epl_difference)
 {
 	zval *array, *args;
     int argc;
 
-	ZEND_PARSE_PARAMETERS_START(1, -1)
+	ZEND_PARSE_PARAMETERS_START(2, -1)
 		Z_PARAM_ARRAY(array)
 		Z_PARAM_VARIADIC('+', args, argc)
 	ZEND_PARSE_PARAMETERS_END();
@@ -284,7 +337,7 @@ static void internal_difference_by(
 
 /* {{{ array differenceBy(array $array)
  */
-static PHP_FUNCTION(epl_difference_by)
+static ZEND_FUNCTION(epl_difference_by)
 {
 	zval *array, *args;
     int argc;
@@ -373,7 +426,7 @@ static void internal_difference_with(
 
 /* {{{ array differenceWith(array $array)
  */
-static PHP_FUNCTION(epl_difference_with)
+static ZEND_FUNCTION(epl_difference_with)
 {
 	zval *array, *args;
     int argc;
@@ -419,7 +472,7 @@ static void internal_drop(zval *return_value, zend_long n)
 
 /* {{{ array drop(array $array, $n = 1)
  */
-static PHP_FUNCTION(epl_drop)
+static ZEND_FUNCTION(epl_drop)
 {
 	zval *array;
 	zend_long n = 1;
@@ -483,7 +536,7 @@ static void internal_drop_while(
 
 /* {{{ array dropWhile(array $array, callable $predicate)
  */
-static PHP_FUNCTION(epl_drop_while)
+static ZEND_FUNCTION(epl_drop_while)
 {
 	zval *array;
 	zend_fcall_info fci;
@@ -529,7 +582,7 @@ static void internal_drop_right(
 
 /* {{{ array dropRight(array $array, $n = 1)
  */
-static PHP_FUNCTION(epl_drop_right)
+static ZEND_FUNCTION(epl_drop_right)
 {
 	zval *array;
 	zend_long n = 1;
@@ -596,7 +649,7 @@ static void internal_drop_right_while(
 
 /* {{{ array dropRightWhile(array $array, callable $predicate)
  */
-static PHP_FUNCTION(epl_drop_right_while)
+static ZEND_FUNCTION(epl_drop_right_while)
 {
 	zval *array;
 	zend_fcall_info fci;
@@ -627,7 +680,7 @@ static ZEND_NAMED_FUNCTION(epl_before_call_magic) /* {{{ */
 
 /* {{{ array before(int $n, callable $func)
  */
-static PHP_FUNCTION(epl_before)
+static ZEND_FUNCTION(epl_before)
 {
 	zval instance;
 	zend_long n;
@@ -646,6 +699,71 @@ static PHP_FUNCTION(epl_before)
 	mptr->internal_function.handler = epl_before_call_magic;
 
 	zend_create_fake_closure(return_value, mptr, NULL, NULL, NULL);
+}
+/* }}} */
+
+/* {{{ collect::__construct(array $array)
+ */
+static ZEND_METHOD(collect, __construct)
+{
+	zval *array, *this_ptr;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_ARRAY(array)
+	ZEND_PARSE_PARAMETERS_END();
+
+	add_property_zval(getThis(), "value", array);
+}
+/* }}} */
+
+/* {{{ collect::all()
+ */
+static ZEND_METHOD(collect, all)
+{
+	zval *array, rv;
+
+	array = zend_read_property(collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	RETURN_ZVAL(array, 1, 0)
+}
+/* }}} */
+
+ZEND_BEGIN_ARG_INFO(arginfo_collect___construct, 0)
+	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_collect_all, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_collect_chunk, 0)
+	ZEND_ARG_TYPE_INFO(0, size, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_collect_compact, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO(arginfo_collect_difference, 0)
+	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
+static const zend_function_entry reflection_functions[] = {
+	ZEND_ME(collect, __construct, arginfo_collect___construct, 0)
+	ZEND_ME(collect, all, arginfo_collect_all, 0)
+	ZEND_ME(collect, chunk, arginfo_collect_chunk, ZEND_ACC_PUBLIC)
+	ZEND_ME(collect, compact, arginfo_collect_compact, ZEND_ACC_PUBLIC)
+	ZEND_ME(collect, difference, arginfo_collect_difference, ZEND_ACC_PUBLIC)
+	PHP_FE_END
+};
+
+/* {{{ PHP_RINIT_FUNCTION
+ */
+PHP_MINIT_FUNCTION(epl)
+{
+	zend_class_entry _collect_entry;
+
+	INIT_NS_CLASS_ENTRY(_collect_entry, "epl", "collect", reflection_functions);
+	collect_ptr = zend_register_internal_class(&_collect_entry);
+
+	return SUCCESS;
 }
 /* }}} */
 
@@ -748,7 +866,7 @@ zend_module_entry epl_module_entry = {
 	STANDARD_MODULE_HEADER,
 	"epl",					/* Extension name */
 	epl_functions,			/* zend_function_entry */
-	NULL,					/* PHP_MINIT - Module initialization */
+	PHP_MINIT(epl),			/* PHP_MINIT - Module initialization */
 	NULL,					/* PHP_MSHUTDOWN - Module shutdown */
 	PHP_RINIT(epl),			/* PHP_RINIT - Request initialization */
 	NULL,					/* PHP_RSHUTDOWN - Request shutdown */

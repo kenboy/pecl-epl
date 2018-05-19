@@ -8,10 +8,20 @@ if (!extension_loaded('epl')) {
 ?>
 --FILE--
 <?php 
-var_dump(\epl\difference([2, 1], [2, 3]));
+var_dump(
+  \epl\difference([2, 1], [2, 3]),
+  (new \epl\collect([2, 1]))->difference()
+);
 ?>
 --EXPECT--
 array(1) {
   [1]=>
   int(1)
+}
+object(epl\collect)#1 (1) {
+  ["value"]=>
+  array(1) {
+    [1]=>
+    int(1)
+  }
 }
