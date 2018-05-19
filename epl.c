@@ -118,19 +118,20 @@ static void internal_compact(zval *return_value)
 
 		value = zend_hash_get_current_data(Z_ARRVAL_P(return_value));
 
-		if (!zend_is_true(value)) {
-			switch(zend_hash_get_current_key(Z_ARRVAL_P(return_value), &string_key, &num_key)) {
-				case HASH_KEY_IS_STRING:
-					zend_hash_del(Z_ARRVAL_P(return_value), string_key);
-					break;
-
-				case HASH_KEY_IS_LONG:
-					zend_hash_index_del(Z_ARRVAL_P(return_value), num_key);
-					break;
-			}
+		if (zend_is_true(value)) {
+			zend_hash_move_forward(Z_ARRVAL_P(return_value));
+			continue;
 		}
 
-		zend_hash_move_forward(Z_ARRVAL_P(return_value));		
+		switch(zend_hash_get_current_key(Z_ARRVAL_P(return_value), &string_key, &num_key)) {
+			case HASH_KEY_IS_STRING:
+				zend_hash_del(Z_ARRVAL_P(return_value), string_key);
+				break;
+
+			case HASH_KEY_IS_LONG:
+				zend_hash_index_del(Z_ARRVAL_P(return_value), num_key);
+				break;
+		}		
 	}
 }
 
@@ -169,6 +170,7 @@ static void internal_difference(zval *return_value, zval *args, int argc)
 	HashTable exclude;
 	zend_string *str, *string_key;
 	zend_ulong num_key;
+	zend_bool exists;
 
 	if (argc == 0) {
 		php_error_docref(NULL, E_WARNING, "");
@@ -202,22 +204,25 @@ static void internal_difference(zval *return_value, zval *args, int argc)
 	while (FAILURE != zend_hash_has_more_elements(Z_ARRVAL_P(return_value))) {
 
 		value = zend_hash_get_current_data(Z_ARRVAL_P(return_value));
+
 		str = zval_get_string(value);
+		exists = zend_hash_exists(&exclude, str);
+		zend_string_release(str);
 
-		if (zend_hash_exists(&exclude, str)) {
-			switch(zend_hash_get_current_key(Z_ARRVAL_P(return_value), &string_key, &num_key)) {
-				case HASH_KEY_IS_STRING:
-					zend_hash_del(Z_ARRVAL_P(return_value), string_key);
-					break;
-
-				case HASH_KEY_IS_LONG:
-					zend_hash_index_del(Z_ARRVAL_P(return_value), num_key);
-					break;
-			}
+		if (!exists) {
+			zend_hash_move_forward(Z_ARRVAL_P(return_value));
+			continue;	
 		}
 
-		zend_string_release(str);
-		zend_hash_move_forward(Z_ARRVAL_P(return_value));		
+		switch(zend_hash_get_current_key(Z_ARRVAL_P(return_value), &string_key, &num_key)) {
+			case HASH_KEY_IS_STRING:
+				zend_hash_del(Z_ARRVAL_P(return_value), string_key);
+				break;
+
+			case HASH_KEY_IS_LONG:
+				zend_hash_index_del(Z_ARRVAL_P(return_value), num_key);
+				break;
+		}
 	}
 
 	zend_hash_destroy(&exclude);
@@ -315,21 +320,23 @@ static void internal_difference_by(
 		}
 
 		str = zval_get_string(&retval);
+		exists = zend_hash_exists(&exclude, str);
+		zend_string_release(str);
 
-		if (zend_hash_exists(&exclude, str)) {
-			switch(zend_hash_get_current_key(Z_ARRVAL_P(return_value), &key, &idx)) {
-				case HASH_KEY_IS_STRING:
-					zend_hash_del(Z_ARRVAL_P(return_value), key);
-					break;
-
-				case HASH_KEY_IS_LONG:
-					zend_hash_index_del(Z_ARRVAL_P(return_value), idx);
-					break;
-			}
+		if (!exists) {
+			zend_hash_move_forward(Z_ARRVAL_P(return_value));
+			continue;	
 		}
 
-		zend_string_release(str);
-		zend_hash_move_forward(Z_ARRVAL_P(return_value));		
+		switch(zend_hash_get_current_key(Z_ARRVAL_P(return_value), &key, &idx)) {
+			case HASH_KEY_IS_STRING:
+				zend_hash_del(Z_ARRVAL_P(return_value), key);
+				break;
+
+			case HASH_KEY_IS_LONG:
+				zend_hash_index_del(Z_ARRVAL_P(return_value), idx);
+				break;
+		}
 	}
 
 	zend_hash_destroy(&exclude);
@@ -408,19 +415,20 @@ static void internal_difference_with(
 			}
 		}
 
-		if (exists) {
-			switch(zend_hash_get_current_key(Z_ARRVAL_P(return_value), &key, &idx)) {
-				case HASH_KEY_IS_STRING:
-					zend_hash_del(Z_ARRVAL_P(return_value), key);
-					break;
-
-				case HASH_KEY_IS_LONG:
-					zend_hash_index_del(Z_ARRVAL_P(return_value), idx);
-					break;
-			}
+		if (!exists) {
+			zend_hash_move_forward(Z_ARRVAL_P(return_value));
+			continue;
 		}
 
-		zend_hash_move_forward(Z_ARRVAL_P(return_value));
+		switch(zend_hash_get_current_key(Z_ARRVAL_P(return_value), &key, &idx)) {
+			case HASH_KEY_IS_STRING:
+				zend_hash_del(Z_ARRVAL_P(return_value), key);
+				break;
+
+			case HASH_KEY_IS_LONG:
+				zend_hash_index_del(Z_ARRVAL_P(return_value), idx);
+				break;
+		}
 	}
 }
 
