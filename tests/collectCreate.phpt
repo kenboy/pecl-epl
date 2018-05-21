@@ -8,7 +8,7 @@ if (!extension_loaded('epl')) {
 ?>
 --FILE--
 <?php
-$collect = new \epl\collect([0, 1, false, 2, '', 3]);
+$collect = \epl\collectCreate([0, 1, false, 2, '', 3]);
 var_dump($collect, $collect->all());
 ?>
 --EXPECT--
