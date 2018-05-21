@@ -72,6 +72,11 @@ static void internal_chunk(zval *return_value, zend_long size)
 
 /* {{{ array chunk(array $array [, $size = 1])
  */
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_chunk, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, size, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
 static ZEND_FUNCTION(epl_chunk)
 {
 	zval *array;
@@ -90,6 +95,10 @@ static ZEND_FUNCTION(epl_chunk)
 
 /* {{{ collect::chunk([$size = 1])
  */
+ZEND_BEGIN_ARG_INFO(arginfo_collect_chunk, 0)
+	ZEND_ARG_TYPE_INFO(0, size, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
 static ZEND_METHOD(collect, chunk)
 {
 	zval *array, rv;
@@ -137,6 +146,9 @@ static void internal_compact(zval *return_value)
 
 /* {{{ collect::compact()
  */
+ZEND_BEGIN_ARG_INFO(arginfo_collect_compact, 0)
+ZEND_END_ARG_INFO()
+
 static ZEND_METHOD(collect, compact)
 {
 	zval *array, rv;
@@ -150,6 +162,10 @@ static ZEND_METHOD(collect, compact)
 
 /* {{{ array compact(array $array)
  */
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_compact, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
 static ZEND_FUNCTION(epl_compact)
 {
 	zval *array;
@@ -230,6 +246,10 @@ static void internal_difference(zval *return_value, zval *args, int argc)
 
 /* {{{ collect::difference(array $array [, array $... ])
  */
+ZEND_BEGIN_ARG_INFO(arginfo_collect_difference, 0)
+	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
 static ZEND_METHOD(collect, difference)
 {
 	zval *array, *args, rv;
@@ -248,6 +268,11 @@ static ZEND_METHOD(collect, difference)
 
 /* {{{ array difference(array $array, array $... [, array $... ])
  */
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_difference, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
+	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
 static ZEND_FUNCTION(epl_difference)
 {
 	zval *array, *args;
@@ -344,6 +369,12 @@ static void internal_difference_by(
 
 /* {{{ array differenceBy(array $array)
  */
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_difference_by, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
+	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
+	ZEND_ARG_CALLABLE_INFO(0, iteratee, 0)
+ZEND_END_ARG_INFO()
+
 static ZEND_FUNCTION(epl_difference_by)
 {
 	zval *array, *args;
@@ -434,6 +465,12 @@ static void internal_difference_with(
 
 /* {{{ array differenceWith(array $array)
  */
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_difference_with, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
+	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
+	ZEND_ARG_CALLABLE_INFO(0, iteratee, 0)
+ZEND_END_ARG_INFO()
+
 static ZEND_FUNCTION(epl_difference_with)
 {
 	zval *array, *args;
@@ -480,6 +517,11 @@ static void internal_drop(zval *return_value, zend_long n)
 
 /* {{{ array drop(array $array, $n = 1)
  */
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_drop, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, n, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
 static ZEND_FUNCTION(epl_drop)
 {
 	zval *array;
@@ -544,6 +586,11 @@ static void internal_drop_while(
 
 /* {{{ array dropWhile(array $array, callable $predicate)
  */
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_drop_while, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
+	ZEND_ARG_CALLABLE_INFO(0, predicate, 0)
+ZEND_END_ARG_INFO()
+
 static ZEND_FUNCTION(epl_drop_while)
 {
 	zval *array;
@@ -590,6 +637,11 @@ static void internal_drop_right(
 
 /* {{{ array dropRight(array $array, $n = 1)
  */
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_drop_right, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, n, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
 static ZEND_FUNCTION(epl_drop_right)
 {
 	zval *array;
@@ -657,6 +709,11 @@ static void internal_drop_right_while(
 
 /* {{{ array dropRightWhile(array $array, callable $predicate)
  */
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_drop_right_while, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
+	ZEND_ARG_CALLABLE_INFO(0, predicate, 0)
+ZEND_END_ARG_INFO()
+
 static ZEND_FUNCTION(epl_drop_right_while)
 {
 	zval *array;
@@ -688,6 +745,11 @@ static ZEND_NAMED_FUNCTION(epl_before_call_magic) /* {{{ */
 
 /* {{{ array before(int $n, callable $func)
  */
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO(arginfo_epl_before, Closure, 0)
+	ZEND_ARG_TYPE_INFO(0, n, IS_LONG, 0)
+	ZEND_ARG_CALLABLE_INFO(0, func, 0)
+ZEND_END_ARG_INFO()
+
 static ZEND_FUNCTION(epl_before)
 {
 	zval instance;
@@ -710,8 +772,12 @@ static ZEND_FUNCTION(epl_before)
 }
 /* }}} */
 
-/* {{{ collect::__construct(array $array)
+/* {{{ \epl\collect::__construct(array $array)
  */
+ZEND_BEGIN_ARG_INFO(arginfo_collect___construct, 0)
+	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
 static ZEND_METHOD(collect, __construct)
 {
 	zval *array, *this_ptr;
@@ -724,8 +790,11 @@ static ZEND_METHOD(collect, __construct)
 }
 /* }}} */
 
-/* {{{ collect::all()
+/* {{{ \epl\collect::all()
  */
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_collect_all, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
 static ZEND_METHOD(collect, all)
 {
 	zval *array, rv;
@@ -735,27 +804,28 @@ static ZEND_METHOD(collect, all)
 }
 /* }}} */
 
-ZEND_BEGIN_ARG_INFO(arginfo_collect___construct, 0)
+/* {{{ \epl\collect::__invoke(array $array)
+ */
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_collect_create, IS_OBJECT, 0)
 	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_collect_all, IS_ARRAY, 0)
-ZEND_END_ARG_INFO()
+static ZEND_FUNCTION(epl_collect_create)
+{
+	zval *array;
 
-ZEND_BEGIN_ARG_INFO(arginfo_collect_chunk, 0)
-	ZEND_ARG_TYPE_INFO(0, size, IS_LONG, 0)
-ZEND_END_ARG_INFO()
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_ARRAY(array)
+	ZEND_PARSE_PARAMETERS_END();
 
-ZEND_BEGIN_ARG_INFO(arginfo_collect_compact, 0)
-ZEND_END_ARG_INFO()
+	object_init_ex(return_value, collect_ptr);
+	add_property_zval(return_value, "value", array);
+}
+/* }}} */
 
-ZEND_BEGIN_ARG_INFO(arginfo_collect_difference, 0)
-	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
-ZEND_END_ARG_INFO()
-
-static const zend_function_entry reflection_functions[] = {
+static const zend_function_entry collect_functions[] = {
 	ZEND_ME(collect, __construct, arginfo_collect___construct, 0)
-	ZEND_ME(collect, all, arginfo_collect_all, 0)
+	ZEND_ME(collect, all, arginfo_collect_all, ZEND_ACC_PUBLIC)
 	ZEND_ME(collect, chunk, arginfo_collect_chunk, ZEND_ACC_PUBLIC)
 	ZEND_ME(collect, compact, arginfo_collect_compact, ZEND_ACC_PUBLIC)
 	ZEND_ME(collect, difference, arginfo_collect_difference, ZEND_ACC_PUBLIC)
@@ -768,7 +838,7 @@ PHP_MINIT_FUNCTION(epl)
 {
 	zend_class_entry _collect_entry;
 
-	INIT_NS_CLASS_ENTRY(_collect_entry, "epl", "collect", reflection_functions);
+	INIT_NS_CLASS_ENTRY(_collect_entry, "epl", "collect", collect_functions);
 	collect_ptr = zend_register_internal_class(&_collect_entry);
 
 	return SUCCESS;
@@ -797,63 +867,10 @@ PHP_MINFO_FUNCTION(epl)
 }
 /* }}} */
 
-/* {{{ arginfo
- */
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_chunk, IS_ARRAY, 0)
-	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
-	ZEND_ARG_TYPE_INFO(0, size, IS_LONG, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_compact, IS_ARRAY, 0)
-	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_difference, IS_ARRAY, 0)
-	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
-	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_difference_by, IS_ARRAY, 0)
-	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
-	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
-	ZEND_ARG_CALLABLE_INFO(0, iteratee, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_difference_with, IS_ARRAY, 0)
-	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
-	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
-	ZEND_ARG_CALLABLE_INFO(0, iteratee, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_drop, IS_ARRAY, 0)
-	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
-	ZEND_ARG_TYPE_INFO(0, n, IS_LONG, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_drop_while, IS_ARRAY, 0)
-	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
-	ZEND_ARG_CALLABLE_INFO(0, predicate, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_drop_right, IS_ARRAY, 0)
-	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
-	ZEND_ARG_TYPE_INFO(0, n, IS_LONG, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_drop_right_while, IS_ARRAY, 0)
-	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
-	ZEND_ARG_CALLABLE_INFO(0, predicate, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO(arginfo_epl_before, Closure, 0)
-	ZEND_ARG_TYPE_INFO(0, n, IS_LONG, 0)
-	ZEND_ARG_CALLABLE_INFO(0, func, 0)
-ZEND_END_ARG_INFO()
-/* }}} */
-
 /* {{{ epl_functions[]
  */
 static const zend_function_entry epl_functions[] = {
+	ZEND_NS_NAMED_FE("epl", collectCreate, ZEND_FN(epl_collect_create), arginfo_epl_collect_create)
 	ZEND_NS_NAMED_FE("epl", chunk, ZEND_FN(epl_chunk), arginfo_epl_chunk)
 	ZEND_NS_NAMED_FE("epl", compact, ZEND_FN(epl_compact), arginfo_epl_compact)
 	ZEND_NS_NAMED_FE("epl", difference, ZEND_FN(epl_difference), arginfo_epl_difference)
