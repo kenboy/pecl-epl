@@ -7,6 +7,7 @@
 #include "php.h"
 #include "zend_operators.h"
 #include "zend_closures.h"
+#include "zend_interfaces.h"
 #include "ext/standard/info.h"
 #include "php_epl.h"
 
@@ -824,7 +825,7 @@ static ZEND_FUNCTION(epl_collect_create)
 /* }}} */
 
 static const zend_function_entry collect_functions[] = {
-	ZEND_ME(collect, __construct, arginfo_collect___construct, 0)
+	ZEND_ME(collect, __construct, arginfo_collect___construct, ZEND_ACC_PUBLIC)
 	ZEND_ME(collect, all, arginfo_collect_all, ZEND_ACC_PUBLIC)
 	ZEND_ME(collect, chunk, arginfo_collect_chunk, ZEND_ACC_PUBLIC)
 	ZEND_ME(collect, compact, arginfo_collect_compact, ZEND_ACC_PUBLIC)
@@ -840,6 +841,7 @@ PHP_MINIT_FUNCTION(epl)
 
 	INIT_NS_CLASS_ENTRY(_collect_entry, "epl", "collect", collect_functions);
 	collect_ptr = zend_register_internal_class(&_collect_entry);
+	//zend_class_implements(collect_ptr, 3, zend_ce_iterator, zend_ce_countable, zend_ce_arrayaccess);
 
 	return SUCCESS;
 }
