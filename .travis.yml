@@ -1,0 +1,19 @@
+language: php
+
+php:
+ - "7.0"
+ - "7.1"
+ - "nightly"
+
+matrix:
+ fast_finish: true
+
+os:
+ - linux
+
+script:
+ - phpize
+ - ./configure --with-epl
+ - make clean
+ - make
+ - env NO_INTERACTION=1 make test
