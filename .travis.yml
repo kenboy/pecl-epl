@@ -12,7 +12,7 @@ os:
 
 script:
  - phpize
- - ./configure --with-epl
+ - ./configure --enable-epl
  - make clean
  - make
  - env NO_INTERACTION=1 make test
