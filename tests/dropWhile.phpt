@@ -8,13 +8,21 @@ if (!extension_loaded('epl')) {
 ?>
 --FILE--
 <?php 
+function compare ($user)
+{
+  return !$user['active'];
+}
+
 $users = [
   [ 'user' => 'barney',  'active' => false ],
   [ 'user' => 'fred',    'active' => true ],
   [ 'user' => 'pebbles', 'active' => true ]
 ];
 
-var_dump(\epl\dropWhile($users, function($user) { return !$user['active']; }));
+var_dump(
+  \epl\dropWhile($users, 'compare'),
+  $users
+);
 ?>
 --EXPECT--
 array(1) {
@@ -24,5 +32,28 @@ array(1) {
     string(6) "barney"
     ["active"]=>
     bool(false)
+  }
+}
+array(3) {
+  [0]=>
+  array(2) {
+    ["user"]=>
+    string(6) "barney"
+    ["active"]=>
+    bool(false)
+  }
+  [1]=>
+  array(2) {
+    ["user"]=>
+    string(4) "fred"
+    ["active"]=>
+    bool(true)
+  }
+  [2]=>
+  array(2) {
+    ["user"]=>
+    string(7) "pebbles"
+    ["active"]=>
+    bool(true)
   }
 }

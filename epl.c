@@ -530,13 +530,13 @@ PHPAPI ZEND_NAMED_FUNCTION(epl_function_drop)
 	zend_long n = 1;
 
 	ZEND_PARSE_PARAMETERS_START(1, 2)
-		Z_PARAM_ARRAY(array)
+		Z_PARAM_ARRAY_EX(array, 0, 1)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_LONG(n)
 	ZEND_PARSE_PARAMETERS_END();
 
-	ZVAL_ARR(return_value, zend_array_dup(Z_ARRVAL_P(array)));
-	internal_drop(return_value, n);
+	internal_drop(array, n);
+	RETURN_ZVAL(array, 1, 0);
 }
 /* }}} */
 
@@ -600,12 +600,12 @@ PHPAPI ZEND_NAMED_FUNCTION(epl_function_drop_while)
 	zend_fcall_info_cache fci_cache;
 
 	ZEND_PARSE_PARAMETERS_START(2, 2)
-		Z_PARAM_ARRAY(array)
+		Z_PARAM_ARRAY_EX(array, 0, 1)
 		Z_PARAM_FUNC(fci, fci_cache)
 	ZEND_PARSE_PARAMETERS_END();
 
-	ZVAL_ARR(return_value, zend_array_dup(Z_ARRVAL_P(array)));
-	internal_drop_while(return_value, &fci, &fci_cache);
+	internal_drop_while(array, &fci, &fci_cache);
+	RETURN_ZVAL(array, 1, 0);
 }
 /* }}} */
 
@@ -650,13 +650,13 @@ PHPAPI ZEND_NAMED_FUNCTION(epl_function_drop_right)
 	zend_long n = 1;
 
 	ZEND_PARSE_PARAMETERS_START(1, 2)
-		Z_PARAM_ARRAY(array)
+		Z_PARAM_ARRAY_EX(array, 0, 1)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_LONG(n)
 	ZEND_PARSE_PARAMETERS_END();
 
-	ZVAL_ARR(return_value, zend_array_dup(Z_ARRVAL_P(array)));
-	internal_drop_right(return_value, n);
+	internal_drop_right(array, n);
+	RETURN_ZVAL(array, 1, 0);
 }
 /* }}} */
 
@@ -723,12 +723,12 @@ PHPAPI ZEND_NAMED_FUNCTION(epl_function_drop_right_while)
 	zend_fcall_info_cache fci_cache;
 
 	ZEND_PARSE_PARAMETERS_START(2, 2)
-		Z_PARAM_ARRAY(array)
+		Z_PARAM_ARRAY_EX(array, 0, 1)
 		Z_PARAM_FUNC(fci, fci_cache)
 	ZEND_PARSE_PARAMETERS_END();
 
-	ZVAL_ARR(return_value, zend_array_dup(Z_ARRVAL_P(array)));
-	internal_drop_right_while(return_value, &fci, &fci_cache);
+	internal_drop_right_while(array, &fci, &fci_cache);
+	RETURN_ZVAL(array, 1, 0);
 }
 /* }}} */
 
