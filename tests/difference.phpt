@@ -8,20 +8,34 @@ if (!extension_loaded('epl')) {
 ?>
 --FILE--
 <?php 
+$array = ["key" => "value", "value2", 5 => "value3"];
 var_dump(
-  \epl\difference([2, 1], [2, 3]),
-  (new \epl\collect([2, 1]))->difference([2, 3])
+  \epl\difference($array, ["value2", "key"=>"value4"]),
+  (new \epl\collect($array))->difference(["value3"]),
+  $array
 );
 ?>
 --EXPECT--
-array(1) {
-  [1]=>
-  int(1)
+array(2) {
+  ["key"]=>
+  string(5) "value"
+  [5]=>
+  string(6) "value3"
 }
 object(epl\collect)#1 (1) {
   ["value"]=>
-  array(1) {
-    [1]=>
-    int(1)
+  array(2) {
+    ["key"]=>
+    string(5) "value"
+    [0]=>
+    string(6) "value2"
   }
+}
+array(3) {
+  ["key"]=>
+  string(5) "value"
+  [0]=>
+  string(6) "value2"
+  [5]=>
+  string(6) "value3"
 }

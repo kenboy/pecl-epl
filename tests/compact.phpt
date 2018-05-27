@@ -7,10 +7,12 @@ if (!extension_loaded('epl')) {
 }
 ?>
 --FILE--
-<?php 
+<?php
+$array = [0, 1, false, 2, '', 3];
 var_dump(
-  \epl\compact([0, 1, false, 2, '', 3]),
-  (new \epl\collect([0, 1, false, 2, '', 3]))->compact()
+  \epl\compact($array),
+  (new \epl\collect($array))->compact(),
+  $array
 );
 ?>
 --EXPECT--
@@ -32,4 +34,18 @@ object(epl\collect)#1 (1) {
     [5]=>
     int(3)
   }
+}
+array(6) {
+  [0]=>
+  int(0)
+  [1]=>
+  int(1)
+  [2]=>
+  bool(false)
+  [3]=>
+  int(2)
+  [4]=>
+  string(0) ""
+  [5]=>
+  int(3)
 }

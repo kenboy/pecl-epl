@@ -7,23 +7,30 @@ if (!extension_loaded('epl')) {
 }
 ?>
 --FILE--
-<?php 
+<?php
+$array = ["key" => "value", "value2", 5 => "value3"];
 var_dump(
-  \epl\chunk(["hello", "hello2"]),
-  (new \epl\collect(["hello", "hello2", "hello3"]))->chunk(2)
+  \epl\chunk($array),
+  (new \epl\collect($array))->chunk(2),
+  $array
 );
 ?>
 --EXPECT--
-array(2) {
+array(3) {
   [0]=>
   array(1) {
-    [0]=>
-    string(5) "hello"
+    ["key"]=>
+    string(5) "value"
   }
   [1]=>
   array(1) {
-    [1]=>
-    string(6) "hello2"
+    [0]=>
+    string(6) "value2"
+  }
+  [2]=>
+  array(1) {
+    [5]=>
+    string(6) "value3"
   }
 }
 object(epl\collect)#1 (1) {
@@ -31,15 +38,23 @@ object(epl\collect)#1 (1) {
   array(2) {
     [0]=>
     array(2) {
+      ["key"]=>
+      string(5) "value"
       [0]=>
-      string(5) "hello"
-      [1]=>
-      string(6) "hello2"
+      string(6) "value2"
     }
     [1]=>
     array(1) {
-      [2]=>
-      string(6) "hello3"
+      [5]=>
+      string(6) "value3"
     }
   }
+}
+array(3) {
+  ["key"]=>
+  string(5) "value"
+  [0]=>
+  string(6) "value2"
+  [5]=>
+  string(6) "value3"
 }
