@@ -369,6 +369,32 @@ static void internal_difference_by(
 	zend_hash_destroy(&exclude);
 }
 
+/* {{{ collect::differenceBy(array $array [, array $... ])
+ */
+ZEND_BEGIN_ARG_INFO(arginfo_collect_method_difference_by, 0)
+	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
+	ZEND_ARG_CALLABLE_INFO(0, iteratee, 0)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_difference_by)
+{
+	zval *array, *args, rv;
+    int argc;
+	zend_fcall_info fci;
+	zend_fcall_info_cache fci_cache;
+
+	ZEND_PARSE_PARAMETERS_START(2, -1)
+		Z_PARAM_VARIADIC_EX('+', args, argc, 1)
+		Z_PARAM_FUNC(fci, fci_cache)
+	ZEND_PARSE_PARAMETERS_END_EX(RETURN_ZVAL(getThis(), 1, 0));
+
+	array = zend_read_property(epl_collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	internal_difference_by(array, args, argc, &fci, &fci_cache);
+
+	RETURN_ZVAL(getThis(), 1, 0);
+}
+/* }}} */
+
 /* {{{ array differenceBy(array $array)
  */
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_function_difference_by, IS_ARRAY, 0)
@@ -384,7 +410,7 @@ PHPAPI ZEND_NAMED_FUNCTION(epl_function_difference_by)
 	zend_fcall_info fci;
 	zend_fcall_info_cache fci_cache;
 
-	ZEND_PARSE_PARAMETERS_START(1, -1)
+	ZEND_PARSE_PARAMETERS_START(3, -1)
 		Z_PARAM_ARRAY_EX(array, 0, 1)
 		Z_PARAM_VARIADIC_EX('+', args, argc, 1)
 		Z_PARAM_FUNC(fci, fci_cache)
@@ -465,6 +491,32 @@ static void internal_difference_with(
 	}
 }
 
+/* {{{ collect::differenceWith(array $array [, array $... ])
+ */
+ZEND_BEGIN_ARG_INFO(arginfo_collect_method_difference_with, 0)
+	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
+	ZEND_ARG_CALLABLE_INFO(0, iteratee, 0)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_difference_with)
+{
+	zval *array, *args, rv;
+    int argc;
+	zend_fcall_info fci;
+	zend_fcall_info_cache fci_cache;
+
+	ZEND_PARSE_PARAMETERS_START(2, -1)
+		Z_PARAM_VARIADIC_EX('+', args, argc, 1)
+		Z_PARAM_FUNC(fci, fci_cache)
+	ZEND_PARSE_PARAMETERS_END_EX(RETURN_ZVAL(getThis(), 1, 0));
+
+	array = zend_read_property(epl_collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	internal_difference_with(array, args, argc, &fci, &fci_cache);
+
+	RETURN_ZVAL(getThis(), 1, 0);
+}
+/* }}} */
+
 /* {{{ array differenceWith(array $array)
  */
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_function_difference_with, IS_ARRAY, 0)
@@ -480,7 +532,7 @@ PHPAPI ZEND_NAMED_FUNCTION(epl_function_difference_with)
 	zend_fcall_info fci;
 	zend_fcall_info_cache fci_cache;
 
-	ZEND_PARSE_PARAMETERS_START(1, -1)
+	ZEND_PARSE_PARAMETERS_START(3, -1)
 		Z_PARAM_ARRAY_EX(array, 0, 1)
 		Z_PARAM_VARIADIC_EX('+', args, argc, 1)
 		Z_PARAM_FUNC(fci, fci_cache)
@@ -516,6 +568,29 @@ static void internal_drop(zval *return_value, zend_long n)
 		//zend_hash_move_forward(Z_ARRVAL_P(return_value));
 	}
 }
+
+/* {{{ collect::drop([$n = 1])
+ */
+ZEND_BEGIN_ARG_INFO(arginfo_collect_method_drop, 0)
+	ZEND_ARG_TYPE_INFO(0, n, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_drop)
+{
+	zval *array, rv;
+	zend_long n = 1;
+
+	ZEND_PARSE_PARAMETERS_START(0, 1)
+		Z_PARAM_OPTIONAL
+		Z_PARAM_LONG(n)
+	ZEND_PARSE_PARAMETERS_END_EX(RETURN_ZVAL(getThis(), 1, 0));
+
+	array = zend_read_property(epl_collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	internal_drop(array, n);
+
+	RETURN_ZVAL(getThis(), 1, 0);
+}
+/* }}} */
 
 /* {{{ array drop(array $array, $n = 1)
  */
@@ -586,6 +661,29 @@ static void internal_drop_while(
 	}
 }
 
+/* {{{ collect::dropWhile([$n = 1])
+ */
+ZEND_BEGIN_ARG_INFO(arginfo_collect_method_drop_while, 0)
+	ZEND_ARG_CALLABLE_INFO(0, predicate, 0)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_drop_while)
+{
+	zval *array, rv;
+	zend_fcall_info fci;
+	zend_fcall_info_cache fci_cache;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_FUNC(fci, fci_cache)
+	ZEND_PARSE_PARAMETERS_END_EX(RETURN_ZVAL(getThis(), 1, 0));
+
+	array = zend_read_property(epl_collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	internal_drop_while(array, &fci, &fci_cache);
+
+	RETURN_ZVAL(getThis(), 1, 0);
+}
+/* }}} */
+
 /* {{{ array dropWhile(array $array, callable $predicate)
  */
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_function_drop_while, IS_ARRAY, 0)
@@ -636,6 +734,29 @@ static void internal_drop_right(
 		zend_hash_internal_pointer_end(Z_ARRVAL_P(return_value));
 	}
 }
+
+/* {{{ collect::dropRight([$n = 1])
+ */
+ZEND_BEGIN_ARG_INFO(arginfo_collect_method_drop_right, 0)
+	ZEND_ARG_TYPE_INFO(0, n, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_drop_right)
+{
+	zval *array, rv;
+	zend_long n = 1;
+
+	ZEND_PARSE_PARAMETERS_START(0, 1)
+		Z_PARAM_OPTIONAL
+		Z_PARAM_LONG(n)
+	ZEND_PARSE_PARAMETERS_END_EX(RETURN_ZVAL(getThis(), 1, 0));
+
+	array = zend_read_property(epl_collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	internal_drop_right(array, n);
+
+	RETURN_ZVAL(getThis(), 1, 0);
+}
+/* }}} */
 
 /* {{{ array dropRight(array $array, $n = 1)
  */
@@ -708,6 +829,29 @@ static void internal_drop_right_while(
 		zend_hash_move_backwards(Z_ARRVAL_P(return_value));
 	}
 }
+
+/* {{{ collect::dropRightWhile(callable $predicate)
+ */
+ZEND_BEGIN_ARG_INFO(arginfo_collect_method_drop_right_while, 0)
+	ZEND_ARG_CALLABLE_INFO(0, predicate, 0)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_drop_right_while)
+{
+	zval *array, rv;
+	zend_fcall_info fci;
+	zend_fcall_info_cache fci_cache;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_FUNC(fci, fci_cache)
+	ZEND_PARSE_PARAMETERS_END_EX(RETURN_ZVAL(getThis(), 1, 0));
+
+	array = zend_read_property(epl_collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	internal_drop_right_while(array, &fci, &fci_cache);
+
+	RETURN_ZVAL(getThis(), 1, 0);
+}
+/* }}} */
 
 /* {{{ array dropRightWhile(array $array, callable $predicate)
  */
@@ -831,6 +975,12 @@ static const zend_function_entry epl_collect_method_functions[] = {
 	ZEND_FENTRY(chunk, epl_collect_method_chunk, arginfo_collect_method_chunk, ZEND_ACC_PUBLIC)
 	ZEND_FENTRY(compact, epl_collect_method_compact, arginfo_collect_method_compact, ZEND_ACC_PUBLIC)
 	ZEND_FENTRY(difference, epl_collect_method_difference, arginfo_collect_method_difference, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(differenceBy, epl_collect_method_difference_by, arginfo_collect_method_difference_by, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(differenceWith, epl_collect_method_difference_with, arginfo_collect_method_difference_with, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(drop, epl_collect_method_drop, arginfo_collect_method_drop, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(dropWhile, epl_collect_method_drop_while, arginfo_collect_method_drop_while, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(dropRight, epl_collect_method_drop_right, arginfo_collect_method_drop_right, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(dropRightWhile, epl_collect_method_drop_right_while, arginfo_collect_method_drop_right_while, ZEND_ACC_PUBLIC)
 	PHP_FE_END
 };
 

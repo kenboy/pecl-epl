@@ -14,6 +14,8 @@ var_dump(
   \epl\dropRight($array, 2),
   \epl\dropRight($array, 5),
   \epl\dropRight($array, 0),
+  (new \epl\collect($array))->dropRight(),
+  (new \epl\collect($array))->dropRight(2),
   $array
 );
 ?>
@@ -37,6 +39,22 @@ array(3) {
   string(6) "value2"
   [5]=>
   string(6) "value3"
+}
+object(epl\collect)#1 (1) {
+  ["value"]=>
+  array(2) {
+    ["key"]=>
+    string(5) "value"
+    [0]=>
+    string(6) "value2"
+  }
+}
+object(epl\collect)#2 (1) {
+  ["value"]=>
+  array(1) {
+    ["key"]=>
+    string(5) "value"
+  }
 }
 array(3) {
   ["key"]=>

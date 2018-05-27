@@ -21,6 +21,7 @@ $users = [
 
 var_dump(
   \epl\dropWhile($users, 'compare'),
+  (new \epl\collect($users))->dropWhile('compare'),
   $users
 );
 ?>
@@ -32,6 +33,18 @@ array(1) {
     string(6) "barney"
     ["active"]=>
     bool(false)
+  }
+}
+object(epl\collect)#1 (1) {
+  ["value"]=>
+  array(1) {
+    [0]=>
+    array(2) {
+      ["user"]=>
+      string(6) "barney"
+      ["active"]=>
+      bool(false)
+    }
   }
 }
 array(3) {

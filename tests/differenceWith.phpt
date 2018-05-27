@@ -15,6 +15,7 @@ function compare ($arrValue, $othValue){
 $array = ["key" => 2.1, 1.2, 5 => "value3"];
 var_dump(
   \epl\differenceWith($array, [2.3, 1.4, 2.1], 'compare'),
+  (new \epl\collect($array))->differenceWith([2.3, 1.4, 2.1], 'compare'),
   $array
 );
 ?>
@@ -24,6 +25,15 @@ array(2) {
   float(1.2)
   [5]=>
   string(6) "value3"
+}
+object(epl\collect)#1 (1) {
+  ["value"]=>
+  array(2) {
+    [0]=>
+    float(1.2)
+    [5]=>
+    string(6) "value3"
+  }
 }
 array(3) {
   ["key"]=>
