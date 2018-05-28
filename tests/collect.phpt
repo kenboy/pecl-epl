@@ -9,7 +9,12 @@ if (!extension_loaded('epl')) {
 --FILE--
 <?php
 $collect = new \epl\collect([0, 1, false, 2, '', 3]);
-var_dump($collect, $collect->all());
+var_dump(
+  $collect, 
+  $collect->all(), 
+  iterator_to_array($collect),
+  count($collect)
+);
 ?>
 --EXPECT--
 object(epl\collect)#1 (1) {
@@ -43,3 +48,18 @@ array(6) {
   [5]=>
   int(3)
 }
+array(6) {
+  [0]=>
+  int(0)
+  [1]=>
+  int(1)
+  [2]=>
+  bool(false)
+  [3]=>
+  int(2)
+  [4]=>
+  string(0) ""
+  [5]=>
+  int(3)
+}
+int(6)

@@ -950,6 +950,140 @@ static ZEND_NAMED_FUNCTION(epl_collect_method_all)
 }
 /* }}} */
 
+/* {{{ \epl\collect::next()
+ */
+ZEND_BEGIN_ARG_INFO(arginfo_collect_method_current, 0)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_current)
+{
+	zval *array, rv;
+
+	array = zend_read_property(epl_collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	RETURN_ZVAL(zend_hash_get_current_data(Z_ARRVAL_P(array)), 1, 0)
+}
+/* }}} */
+
+/* {{{ \epl\collect::next()
+ */
+ZEND_BEGIN_ARG_INFO(arginfo_collect_method_key, 0)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_key)
+{
+	zval *array, rv, key;
+
+	array = zend_read_property(epl_collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	zend_hash_get_current_key_zval(Z_ARRVAL_P(array), &key);
+	RETURN_ZVAL(&key, 1, 0)
+}
+/* }}} */
+
+/* {{{ \epl\collect::next()
+ */
+ZEND_BEGIN_ARG_INFO(arginfo_collect_method_next, 0)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_next)
+{
+	zval *array, rv;
+
+	array = zend_read_property(epl_collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	zend_hash_move_forward(Z_ARRVAL_P(array));
+}
+/* }}} */
+
+/* {{{ \epl\collect::rewind()
+ */
+ZEND_BEGIN_ARG_INFO(arginfo_collect_method_rewind, 0)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_rewind)
+{
+	zval *array, rv;
+
+	array = zend_read_property(epl_collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	zend_hash_internal_pointer_reset(Z_ARRVAL_P(array));
+}
+/* }}} */
+
+/* {{{ \epl\collect::valid()
+ */
+ZEND_BEGIN_ARG_INFO(arginfo_collect_method_valid, 0)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_valid)
+{
+	zval *array, rv;
+
+	array = zend_read_property(epl_collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	RETURN_BOOL(SUCCESS == zend_hash_has_more_elements(Z_ARRVAL_P(array)))
+}
+/* }}} */
+
+/* {{{ \epl\collect::count()
+ */
+ZEND_BEGIN_ARG_INFO(arginfo_collect_method_count, 0)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_count)
+{
+	zval *array, rv;
+
+	array = zend_read_property(epl_collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+	RETURN_LONG(zend_hash_num_elements(Z_ARRVAL_P(array)))
+}
+/* }}} */
+
+/* {{{ \epl\collect::offsetExists($index)
+ */
+ZEND_BEGIN_ARG_INFO_EX(arginfo_collect_method_offset_exists, 0, 0, 1)
+    ZEND_ARG_INFO(0, index)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_offset_exists)
+{
+
+}
+/* }}} */
+
+/* {{{ \epl\collect::offsetGet($index)
+ */
+ZEND_BEGIN_ARG_INFO_EX(arginfo_collect_method_offset_get, 0, 0, 1)
+    ZEND_ARG_INFO(0, index)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_offset_get)
+{
+
+}
+/* }}} */
+
+/* {{{ \epl\collect::offsetSet($index, $newval)
+ */
+ZEND_BEGIN_ARG_INFO_EX(arginfo_collect_method_offset_set, 0, 0, 2)
+        ZEND_ARG_INFO(0, index)
+        ZEND_ARG_INFO(0, newval)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_offset_set)
+{
+
+}
+/* }}} */
+
+/* {{{ \epl\collect::offsetUnset($index)
+ */
+ZEND_BEGIN_ARG_INFO_EX(arginfo_collect_method_offset_unset, 0, 0, 1)
+    ZEND_ARG_INFO(0, index)
+ZEND_END_ARG_INFO()
+
+static ZEND_NAMED_FUNCTION(epl_collect_method_offset_unset)
+{
+
+}
+/* }}} */
+
 /* {{{ \epl\collect::__invoke(array $array)
  */
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO(arginfo_epl_function_collect_create, IS_OBJECT, 0)
@@ -971,6 +1105,16 @@ PHPAPI ZEND_NAMED_FUNCTION(epl_function_collect_create)
 
 static const zend_function_entry epl_collect_method_functions[] = {
 	ZEND_FENTRY(__construct, epl_collect_method___construct, arginfo_collect_method___construct, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(current, epl_collect_method_current, arginfo_collect_method_current, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(key, epl_collect_method_key, arginfo_collect_method_key, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(next, epl_collect_method_next, arginfo_collect_method_next, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(rewind, epl_collect_method_rewind, arginfo_collect_method_rewind, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(valid, epl_collect_method_valid, arginfo_collect_method_valid, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(count, epl_collect_method_count, arginfo_collect_method_count, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(offsetExists, epl_collect_method_offset_exists, arginfo_collect_method_offset_exists, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(offsetGet, epl_collect_method_offset_get, arginfo_collect_method_offset_get, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(offsetSet, epl_collect_method_offset_set, arginfo_collect_method_offset_set, ZEND_ACC_PUBLIC)
+	ZEND_FENTRY(offsetUnset, epl_collect_method_offset_unset, arginfo_collect_method_offset_unset, ZEND_ACC_PUBLIC)
 	ZEND_FENTRY(all, epl_collect_method_all, arginfo_collect_method_all, ZEND_ACC_PUBLIC)
 	ZEND_FENTRY(chunk, epl_collect_method_chunk, arginfo_collect_method_chunk, ZEND_ACC_PUBLIC)
 	ZEND_FENTRY(compact, epl_collect_method_compact, arginfo_collect_method_compact, ZEND_ACC_PUBLIC)
@@ -992,7 +1136,7 @@ PHP_MINIT_FUNCTION(epl)
 
 	INIT_NS_CLASS_ENTRY(_collect_entry, "epl", "collect", epl_collect_method_functions);
 	epl_collect_ptr = zend_register_internal_class(&_collect_entry);
-	//zend_class_implements(epl_collect_ptr, 3, zend_ce_iterator, zend_ce_countable, zend_ce_arrayaccess);
+	zend_class_implements(epl_collect_ptr, 3, zend_ce_iterator, zend_ce_countable, zend_ce_arrayaccess);
 
 	return SUCCESS;
 }
