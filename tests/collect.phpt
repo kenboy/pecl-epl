@@ -8,12 +8,17 @@ if (!extension_loaded('epl')) {
 ?>
 --FILE--
 <?php
-$collect = new \epl\collect([0, 1, false, 2, '', 3]);
+$collect = new \epl\collect([0, "key"=>1, false, 2, "", 3]);
 var_dump(
   $collect, 
   $collect->all(), 
   iterator_to_array($collect),
-  count($collect)
+  count($collect),
+  isset($collect[0]),
+  isset($collect["key"]),
+  isset($collect[6]),
+  $collect[4],
+  $collect["key"]
 );
 ?>
 --EXPECT--
@@ -22,44 +27,49 @@ object(epl\collect)#1 (1) {
   array(6) {
     [0]=>
     int(0)
-    [1]=>
+    ["key"]=>
     int(1)
-    [2]=>
+    [1]=>
     bool(false)
-    [3]=>
+    [2]=>
     int(2)
-    [4]=>
+    [3]=>
     string(0) ""
-    [5]=>
+    [4]=>
     int(3)
   }
 }
 array(6) {
   [0]=>
   int(0)
-  [1]=>
+  ["key"]=>
   int(1)
-  [2]=>
+  [1]=>
   bool(false)
-  [3]=>
+  [2]=>
   int(2)
-  [4]=>
+  [3]=>
   string(0) ""
-  [5]=>
+  [4]=>
   int(3)
 }
 array(6) {
   [0]=>
   int(0)
-  [1]=>
+  ["key"]=>
   int(1)
-  [2]=>
+  [1]=>
   bool(false)
-  [3]=>
+  [2]=>
   int(2)
-  [4]=>
+  [3]=>
   string(0) ""
-  [5]=>
+  [4]=>
   int(3)
 }
 int(6)
+bool(true)
+bool(true)
+bool(false)
+int(3)
+int(1)
