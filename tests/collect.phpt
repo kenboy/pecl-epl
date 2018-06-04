@@ -8,7 +8,13 @@ if (!extension_loaded('epl')) {
 ?>
 --FILE--
 <?php
-$collect = new \epl\collect([0, "key"=>1, false, 2, "", 3]);
+$collect = new \epl\collect([0]);
+$collect["key"] = 1;
+$collect[] = false;
+$collect[] = 2;
+$collect[] = "";
+$collect[] = 3;
+
 var_dump(
   $collect, 
   $collect->all(), 

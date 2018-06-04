@@ -14,12 +14,6 @@
 /* Class entry pointers */
 PHPAPI zend_class_entry *epl_collect_ptr;
 
-zend_always_inline zval *epl_collect_read_property(zval *object, const char *name) 
-{
-	zval rv;
-	return zend_read_property(epl_collect_ptr, object, name, sizeof(name)-1, 1, &rv);
-}
-
 static void internal_chunk(zval *return_value, zend_long size)
 {
 	zval array, *value, chunk;
@@ -1101,13 +1095,22 @@ static ZEND_NAMED_FUNCTION(epl_collect_method_offset_get)
 
 	switch (Z_TYPE_P(index)) {
 		case IS_STRING:
-			RETURN_ZVAL(zend_hash_find(Z_ARRVAL_P(array), Z_STR_P(index)), 1, 0);
+			if (value = zend_hash_find(Z_ARRVAL_P(array), Z_STR_P(index))) {
+				RETURN_ZVAL(value, 1, 0);
+			}
+			RETURN_NULL();
 
 		case IS_LONG:
-			RETURN_ZVAL(zend_hash_index_find(Z_ARRVAL_P(array), Z_LVAL_P(index)), 1, 0);
+			if (value = zend_hash_index_find(Z_ARRVAL_P(array), Z_LVAL_P(index))) {
+				RETURN_ZVAL(value, 1, 0);
+			}
+			RETURN_NULL();
 
 		case IS_NULL:
-			RETURN_ZVAL(zend_hash_find(Z_ARRVAL_P(array), ZSTR_EMPTY_ALLOC()), 1, 0);
+			if (value = zend_hash_find(Z_ARRVAL_P(array), ZSTR_EMPTY_ALLOC())) {
+				RETURN_ZVAL(value, 1, 0);
+			}
+			RETURN_NULL();
 
 		default:
 			php_error_docref(NULL, E_WARNING, "The first argument should be either a string or an integer");
@@ -1125,14 +1128,32 @@ ZEND_END_ARG_INFO()
 
 static ZEND_NAMED_FUNCTION(epl_collect_method_offset_set)
 {
-	zval *index, *newval, *array;
+	zval *index, *newval, *array, rv;
 
 	ZEND_PARSE_PARAMETERS_START(2, 2)
 		Z_PARAM_ZVAL(index)
 		Z_PARAM_ZVAL(newval)
 	ZEND_PARSE_PARAMETERS_END();
 
-	array = epl_collect_read_property(getThis(), "value");
+	array = zend_read_property(epl_collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+
+	switch (Z_TYPE_P(index)) {
+		case IS_STRING:
+			zend_hash_add(Z_ARRVAL_P(array), Z_STR_P(index), newval);
+			break;
+
+		case IS_LONG:
+			zend_hash_index_add(Z_ARRVAL_P(array), Z_LVAL_P(index), newval);
+			break;
+
+		case IS_NULL:
+			zend_hash_next_index_insert(Z_ARRVAL_P(array), newval);
+			break;
+
+		default:
+			php_error_docref(NULL, E_WARNING, "The first argument should be either a string or an integer");
+			RETURN_FALSE;
+	}
 }
 /* }}} */
 
@@ -1144,13 +1165,31 @@ ZEND_END_ARG_INFO()
 
 static ZEND_NAMED_FUNCTION(epl_collect_method_offset_unset)
 {
-	zval *index, *array;
+	zval *index, *array, rv;
 
 	ZEND_PARSE_PARAMETERS_START(1, 1)
 		Z_PARAM_ZVAL(index)
 	ZEND_PARSE_PARAMETERS_END();
 
-	array = epl_collect_read_property(getThis(), "value");
+	array = zend_read_property(epl_collect_ptr, getThis(), "value", sizeof("value")-1, 1, &rv);
+
+	switch (Z_TYPE_P(index)) {
+		case IS_STRING:
+			zend_hash_del(Z_ARRVAL_P(array), Z_STR_P(index));
+			break;
+
+		case IS_LONG:
+			zend_hash_index_del(Z_ARRVAL_P(array), Z_LVAL_P(index));
+			break;
+
+		case IS_NULL:
+			zend_hash_del(Z_ARRVAL_P(array), ZSTR_EMPTY_ALLOC());
+			break;
+
+		default:
+			php_error_docref(NULL, E_WARNING, "The first argument should be either a string or an integer");
+			RETURN_FALSE;
+	}
 }
 /* }}} */
 
