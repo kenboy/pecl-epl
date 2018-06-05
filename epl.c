@@ -8,6 +8,7 @@
 #include "zend_operators.h"
 #include "zend_closures.h"
 #include "zend_interfaces.h"
+#include "zend_exceptions.h"
 #include "ext/standard/info.h"
 #include "php_epl.h"
 
@@ -22,13 +23,13 @@ static void internal_chunk(zval *return_value, zend_long size)
 	zend_ulong num_key;
 
 	if (size < 1) {
-		php_error_docref(NULL, E_WARNING, "Size parameter expected to be greater than 0");
+		zend_throw_exception(zend_ce_exception, "Size parameter expected to be greater than 0", 0);
 		return;
 	}
 
 	count = zend_hash_num_elements(Z_ARRVAL_P(return_value));
 	if (size > count) {
-		php_error_docref(NULL, E_WARNING, "Size parameter expected to be greater than 0");
+		zend_throw_exception(zend_ce_exception, "Size parameter expected to be greater than 0", 0);
 		return;
 	}
 
@@ -189,7 +190,7 @@ static void internal_difference(zval *return_value, zval *args, int argc)
 	zend_bool exists;
 
 	if (argc == 0) {
-		php_error_docref(NULL, E_WARNING, "");
+		zend_throw_exception(zend_ce_exception, "", 0);
 		return;
 	}
 
@@ -305,7 +306,7 @@ static void internal_difference_by(
 	fci->retval = &retval;
 
 	if (argc == 0) {
-		php_error_docref(NULL, E_WARNING, "");
+		zend_throw_exception(zend_ce_exception, "", 0);
 		return;
 	}
 
@@ -437,7 +438,7 @@ static void internal_difference_with(
 	fci->retval = &retval;
 
 	if (argc == 0) {
-		php_error_docref(NULL, E_WARNING, "");
+		zend_throw_exception(zend_ce_exception, "", 0);
 		return;
 	}
 
@@ -1053,26 +1054,17 @@ static ZEND_NAMED_FUNCTION(epl_collect_method_offset_exists)
 
 	switch (Z_TYPE_P(index)) {
 		case IS_STRING:
-			if (zend_symtable_exists_ind(Z_ARRVAL_P(array), Z_STR_P(index))) {
-				RETURN_TRUE;
-			}
-			RETURN_FALSE;
+			RETURN_BOOL(zend_symtable_exists_ind(Z_ARRVAL_P(array), Z_STR_P(index)))
 
 		case IS_LONG:
-			if (zend_hash_index_exists(Z_ARRVAL_P(array), Z_LVAL_P(index))) {
-				RETURN_TRUE;
-			}
-			RETURN_FALSE;
+			RETURN_BOOL(zend_hash_index_exists(Z_ARRVAL_P(array), Z_LVAL_P(index)))
 
 		case IS_NULL:
-			if (zend_hash_exists_ind(Z_ARRVAL_P(array), ZSTR_EMPTY_ALLOC())) {
-				RETURN_TRUE;
-			}
-			RETURN_FALSE;
+			RETURN_BOOL(zend_hash_exists_ind(Z_ARRVAL_P(array), ZSTR_EMPTY_ALLOC()))
 
 		default:
-			php_error_docref(NULL, E_WARNING, "The first argument should be either a string or an integer");
-			RETURN_FALSE;
+			zend_throw_exception(zend_ce_exception, "The first argument should be either a string or an integer", 0);
+			return;
 	}
 }
 /* }}} */
@@ -1098,23 +1090,26 @@ static ZEND_NAMED_FUNCTION(epl_collect_method_offset_get)
 			if (value = zend_hash_find(Z_ARRVAL_P(array), Z_STR_P(index))) {
 				RETURN_ZVAL(value, 1, 0);
 			}
-			RETURN_NULL();
+			zend_throw_exception(zend_ce_exception, "Undefined index:", 0);
+			return;
 
 		case IS_LONG:
 			if (value = zend_hash_index_find(Z_ARRVAL_P(array), Z_LVAL_P(index))) {
 				RETURN_ZVAL(value, 1, 0);
 			}
-			RETURN_NULL();
+			zend_throw_exception(zend_ce_exception, "", 0);
+			return;
 
 		case IS_NULL:
 			if (value = zend_hash_find(Z_ARRVAL_P(array), ZSTR_EMPTY_ALLOC())) {
 				RETURN_ZVAL(value, 1, 0);
 			}
-			RETURN_NULL();
+			zend_throw_exception(zend_ce_exception, "", 0);
+			return;
 
 		default:
-			php_error_docref(NULL, E_WARNING, "The first argument should be either a string or an integer");
-			RETURN_FALSE;
+			zend_throw_exception(zend_ce_exception, "The first argument should be either a string or an integer", 0);
+			return;
 	}
 }
 /* }}} */
@@ -1151,8 +1146,8 @@ static ZEND_NAMED_FUNCTION(epl_collect_method_offset_set)
 			break;
 
 		default:
-			php_error_docref(NULL, E_WARNING, "The first argument should be either a string or an integer");
-			RETURN_FALSE;
+			zend_throw_exception(zend_ce_exception, "The first argument should be either a string or an integer", 0);
+			return;
 	}
 }
 /* }}} */
@@ -1187,8 +1182,8 @@ static ZEND_NAMED_FUNCTION(epl_collect_method_offset_unset)
 			break;
 
 		default:
-			php_error_docref(NULL, E_WARNING, "The first argument should be either a string or an integer");
-			RETURN_FALSE;
+			zend_throw_exception(zend_ce_exception, "The first argument should be either a string or an integer", 0);
+			return;
 	}
 }
 /* }}} */
