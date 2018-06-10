@@ -25,7 +25,7 @@ array(3) {
   int(3)
 }
 object(epl\collect)#1 (1) {
-  ["value"]=>
+  ["value":protected]=>
   array(3) {
     [1]=>
     int(1)

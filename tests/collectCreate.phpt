@@ -8,12 +8,12 @@ if (!extension_loaded('epl')) {
 ?>
 --FILE--
 <?php
-$collect = \epl\collectCreate([0, 1, false, 2, '', 3]);
-var_dump($collect, $collect->all());
+$collect = \epl\collect([0, 1, false, 2, '', 3]);
+var_dump($collect, $collect->all(), \epl\collect());
 ?>
 --EXPECT--
 object(epl\collect)#1 (1) {
-  ["value"]=>
+  ["value":protected]=>
   array(6) {
     [0]=>
     int(0)
@@ -42,4 +42,9 @@ array(6) {
   string(0) ""
   [5]=>
   int(3)
+}
+object(epl\collect)#2 (1) {
+  ["value":protected]=>
+  array(0) {
+  }
 }

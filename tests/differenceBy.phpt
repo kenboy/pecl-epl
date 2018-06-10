@@ -23,7 +23,7 @@ array(2) {
   string(6) "value3"
 }
 object(epl\collect)#1 (1) {
-  ["value"]=>
+  ["value":protected]=>
   array(2) {
     [0]=>
     float(1.2)

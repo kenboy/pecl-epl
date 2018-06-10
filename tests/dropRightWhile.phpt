@@ -43,7 +43,7 @@ array(2) {
   }
 }
 object(epl\collect)#1 (1) {
-  ["value"]=>
+  ["value":protected]=>
   array(2) {
     [1]=>
     array(2) {

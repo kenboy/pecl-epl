@@ -8,7 +8,8 @@ if (!extension_loaded('epl')) {
 ?>
 --FILE--
 <?php
-$collect = new \epl\collect([0]);
+$collect = new \epl\collect();
+$collect[] = 0;
 $collect["key"] = 1;
 $collect[] = false;
 $collect[] = 2;
@@ -29,7 +30,7 @@ var_dump(
 ?>
 --EXPECT--
 object(epl\collect)#1 (1) {
-  ["value"]=>
+  ["value":protected]=>
   array(6) {
     [0]=>
     int(0)

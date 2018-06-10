@@ -41,7 +41,7 @@ array(3) {
   string(6) "value3"
 }
 object(epl\collect)#1 (1) {
-  ["value"]=>
+  ["value":protected]=>
   array(2) {
     ["key"]=>
     string(5) "value"
@@ -50,7 +50,7 @@ object(epl\collect)#1 (1) {
   }
 }
 object(epl\collect)#2 (1) {
-  ["value"]=>
+  ["value":protected]=>
   array(1) {
     ["key"]=>
     string(5) "value"

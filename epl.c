@@ -927,13 +927,19 @@ ZEND_END_ARG_INFO()
 
 static ZEND_NAMED_FUNCTION(epl_collect_method___construct)
 {
-	zval *array;
+	zval *array = NULL, property;
 
-	ZEND_PARSE_PARAMETERS_START(1, 1)
+	ZEND_PARSE_PARAMETERS_START(0, 1)
+		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY_EX(array, 0 , 1)
 	ZEND_PARSE_PARAMETERS_END();
 
-	add_property_zval(getThis(), "value", array);
+	if (NULL == array) {
+		array_init(&property);
+		array = &property;
+	}
+
+	zend_update_property(epl_collect_ptr, getThis(), "value", sizeof("value")-1, array);
 }
 /* }}} */
 
@@ -1196,14 +1202,20 @@ ZEND_END_ARG_INFO()
 
 PHPAPI ZEND_NAMED_FUNCTION(epl_function_collect_create)
 {
-	zval *array;
+	zval *array = NULL, property;
 
-	ZEND_PARSE_PARAMETERS_START(1, 1)
+	ZEND_PARSE_PARAMETERS_START(0, 1)
+		Z_PARAM_OPTIONAL
 		Z_PARAM_ARRAY_EX(array, 0 , 1)
 	ZEND_PARSE_PARAMETERS_END();
 
+	if (NULL == array) {
+		array_init(&property);
+		array = &property;
+	}
+
 	object_init_ex(return_value, epl_collect_ptr);
-	add_property_zval(return_value, "value", array);
+	zend_update_property(epl_collect_ptr, return_value, "value", sizeof("value")-1, array);
 }
 /* }}} */
 
@@ -1241,6 +1253,7 @@ PHP_MINIT_FUNCTION(epl)
 	INIT_NS_CLASS_ENTRY(_collect_entry, "epl", "collect", epl_collect_method_functions);
 	epl_collect_ptr = zend_register_internal_class(&_collect_entry);
 	zend_class_implements(epl_collect_ptr, 3, zend_ce_iterator, zend_ce_countable, zend_ce_arrayaccess);
+	zend_declare_property_null(epl_collect_ptr, "value", sizeof("value")-1, ZEND_ACC_PROTECTED);
 
 	return SUCCESS;
 }
@@ -1271,7 +1284,7 @@ PHP_MINFO_FUNCTION(epl)
 /* {{{ epl_functions[]
  */
 static const zend_function_entry epl_functions[] = {
-	ZEND_NS_NAMED_FE("epl", collectCreate, epl_function_collect_create, arginfo_epl_function_collect_create)
+	ZEND_NS_NAMED_FE("epl", collect, epl_function_collect_create, arginfo_epl_function_collect_create)
 	ZEND_NS_NAMED_FE("epl", chunk, epl_function_chunk, arginfo_epl_function_chunk)
 	ZEND_NS_NAMED_FE("epl", compact, epl_function_compact, arginfo_epl_function_compact)
 	ZEND_NS_NAMED_FE("epl", difference, epl_function_difference, arginfo_epl_function_difference)
