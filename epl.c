@@ -1068,8 +1068,25 @@ static ZEND_NAMED_FUNCTION(epl_collect_method_offset_exists)
 		case IS_NULL:
 			RETURN_BOOL(zend_hash_exists_ind(Z_ARRVAL_P(array), ZSTR_EMPTY_ALLOC()))
 
+		case IS_RESOURCE:
+			zend_error(E_NOTICE, "Resource ID#%d used as offset, casting to integer (%d)", Z_RES_HANDLE_P(index), Z_RES_HANDLE_P(index));
+			RETURN_BOOL(zend_hash_index_find(Z_ARRVAL_P(array), Z_RES_HANDLE_P(index)))
+			break;
+
+		case IS_FALSE:
+			RETURN_BOOL(zend_hash_index_find(Z_ARRVAL_P(array), 0))
+			break;
+
+		case IS_TRUE:
+			RETURN_BOOL(zend_hash_index_find(Z_ARRVAL_P(array), 1))
+			break;
+
+		case IS_DOUBLE:
+			RETURN_BOOL(zend_hash_index_find(Z_ARRVAL_P(array), zend_dval_to_lval(Z_DVAL_P(index))))
+			break;
+
 		default:
-			zend_throw_exception(zend_ce_exception, "The first argument should be either a string or an integer", 0);
+			zend_throw_exception(zend_ce_exception, "Illegal offset type", 0);
 			return;
 	}
 }
@@ -1096,25 +1113,54 @@ static ZEND_NAMED_FUNCTION(epl_collect_method_offset_get)
 			if (value = zend_hash_find(Z_ARRVAL_P(array), Z_STR_P(index))) {
 				RETURN_ZVAL(value, 1, 0);
 			}
-			zend_throw_exception(zend_ce_exception, "Undefined index:", 0);
+			zend_throw_exception_ex(zend_ce_exception, 0, "Undefined index: %s", Z_STR_P(index));
 			return;
 
 		case IS_LONG:
 			if (value = zend_hash_index_find(Z_ARRVAL_P(array), Z_LVAL_P(index))) {
 				RETURN_ZVAL(value, 1, 0);
 			}
-			zend_throw_exception(zend_ce_exception, "", 0);
+			zend_throw_exception_ex(zend_ce_exception, 0, "Undefined index: %d", Z_LVAL_P(index));
 			return;
 
 		case IS_NULL:
 			if (value = zend_hash_find(Z_ARRVAL_P(array), ZSTR_EMPTY_ALLOC())) {
 				RETURN_ZVAL(value, 1, 0);
 			}
-			zend_throw_exception(zend_ce_exception, "", 0);
+			zend_throw_exception_ex(zend_ce_exception, 0, "Undefined index: %s", "");
 			return;
 
+		case IS_RESOURCE:
+			zend_error(E_NOTICE, "Resource ID#%d used as offset, casting to integer (%d)", Z_RES_HANDLE_P(index), Z_RES_HANDLE_P(index));
+			if (value = zend_hash_index_find(Z_ARRVAL_P(array), Z_RES_HANDLE_P(index))) {
+				RETURN_ZVAL(value, 1, 0);
+			}
+			zend_throw_exception_ex(zend_ce_exception, 0, "Undefined index: %d", Z_RES_HANDLE_P(index));
+			break;
+
+		case IS_FALSE:
+			if (value = zend_hash_index_find(Z_ARRVAL_P(array), 0)) {
+				RETURN_ZVAL(value, 1, 0);
+			}
+			zend_throw_exception_ex(zend_ce_exception, 0, "Undefined index: %d", 0);
+			break;
+
+		case IS_TRUE:
+			if (value = zend_hash_index_find(Z_ARRVAL_P(array), 1)) {
+				RETURN_ZVAL(value, 1, 0);
+			}
+			zend_throw_exception_ex(zend_ce_exception, 0, "Undefined index: %d", 1);
+			break;
+
+		case IS_DOUBLE:
+			if (value = zend_hash_index_find(Z_ARRVAL_P(array), zend_dval_to_lval(Z_DVAL_P(index)))) {
+				RETURN_ZVAL(value, 1, 0);
+			}
+			zend_throw_exception_ex(zend_ce_exception, 0, "Undefined index: %d", zend_dval_to_lval(Z_DVAL_P(index)));
+			break;
+
 		default:
-			zend_throw_exception(zend_ce_exception, "The first argument should be either a string or an integer", 0);
+			zend_throw_exception(zend_ce_exception, "Illegal offset type", 0);
 			return;
 	}
 }
@@ -1129,7 +1175,7 @@ ZEND_END_ARG_INFO()
 
 static ZEND_NAMED_FUNCTION(epl_collect_method_offset_set)
 {
-	zval *index, *newval, *array, rv;
+	zval *index, *newval, *array, rv, *result;
 
 	ZEND_PARSE_PARAMETERS_START(2, 2)
 		Z_PARAM_ZVAL(index)
@@ -1151,8 +1197,25 @@ static ZEND_NAMED_FUNCTION(epl_collect_method_offset_set)
 			zend_hash_next_index_insert(Z_ARRVAL_P(array), newval);
 			break;
 
+		case IS_RESOURCE:
+			zend_error(E_NOTICE, "Resource ID#%d used as offset, casting to integer (%d)", Z_RES_HANDLE_P(index), Z_RES_HANDLE_P(index));
+			zend_hash_index_update(Z_ARRVAL_P(array), Z_RES_HANDLE_P(index), newval);
+			break;
+
+		case IS_FALSE:
+			zend_hash_index_update(Z_ARRVAL_P(array), 0, newval);
+			break;
+
+		case IS_TRUE:
+			zend_hash_index_update(Z_ARRVAL_P(array), 1, newval);
+			break;
+
+		case IS_DOUBLE:
+			zend_hash_index_update(Z_ARRVAL_P(array), zend_dval_to_lval(Z_DVAL_P(index)), newval);
+			break;
+
 		default:
-			zend_throw_exception(zend_ce_exception, "The first argument should be either a string or an integer", 0);
+			zend_throw_exception(zend_ce_exception, "Illegal offset type", 0);
 			return;
 	}
 }
@@ -1187,8 +1250,25 @@ static ZEND_NAMED_FUNCTION(epl_collect_method_offset_unset)
 			zend_hash_del(Z_ARRVAL_P(array), ZSTR_EMPTY_ALLOC());
 			break;
 
+		case IS_RESOURCE:
+			zend_error(E_NOTICE, "Resource ID#%d used as offset, casting to integer (%d)", Z_RES_HANDLE_P(index), Z_RES_HANDLE_P(index));
+			zend_hash_index_del(Z_ARRVAL_P(array), Z_RES_HANDLE_P(index));
+			break;
+
+		case IS_FALSE:
+			zend_hash_index_del(Z_ARRVAL_P(array), 0);
+			break;
+
+		case IS_TRUE:
+			zend_hash_index_del(Z_ARRVAL_P(array), 1);
+			break;
+
+		case IS_DOUBLE:
+			zend_hash_index_del(Z_ARRVAL_P(array), zend_dval_to_lval(Z_DVAL_P(index)));
+			break;
+
 		default:
-			zend_throw_exception(zend_ce_exception, "The first argument should be either a string or an integer", 0);
+			zend_throw_exception(zend_ce_exception, "Illegal offset type", 0);
 			return;
 	}
 }
