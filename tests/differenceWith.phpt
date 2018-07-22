@@ -1,5 +1,5 @@
 --TEST--
-chunk
+differenceWith
 --SKIPIF--
 <?php
 if (!extension_loaded('epl')) {

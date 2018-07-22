@@ -1,5 +1,5 @@
 --TEST--
-chunk
+drop
 --SKIPIF--
 <?php
 if (!extension_loaded('epl')) {

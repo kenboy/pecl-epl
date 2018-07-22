@@ -1,4 +1,4 @@
-#include "function/iterator/chunk.h"
+#include "function/array/chunk.h"
 
 #include <zend_operators.h>
 #include "zend_closures.h"
