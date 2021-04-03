@@ -63,11 +63,10 @@ PHPAPI ZEND_NAMED_FUNCTION(epl_collect_method_drop_right)
 
 /* {{{ array dropRight(array $array, $n = 1)
  */
-const zend_internal_arg_info arginfo_epl_function_drop_right[] = {
-	{ (const char*)(zend_uintptr_t)(-1), ZEND_TYPE_ENCODE(IS_ARRAY, 0), ZEND_RETURN_VALUE, 0 },
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_epl_function_drop_right, ZEND_RETURN_VALUE, -1, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, n, IS_LONG, 0)
-};
+ZEND_END_ARG_INFO()
 
 PHPAPI ZEND_NAMED_FUNCTION(epl_function_drop_right)
 {

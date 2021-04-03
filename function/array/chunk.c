@@ -67,11 +67,10 @@ static void internal_chunk(zval *return_value, zend_long size)
 
 /* {{{ array chunk(array $array [, $size = 1])
  */
-const zend_internal_arg_info arginfo_epl_function_chunk[] = {
-	{ (const char*)(zend_uintptr_t)(-1), ZEND_TYPE_ENCODE(IS_ARRAY, 0), ZEND_RETURN_VALUE, 0 },
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_epl_function_chunk, ZEND_RETURN_VALUE, -1, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, size, IS_LONG, 0)
-};
+ZEND_END_ARG_INFO()
 
 PHPAPI ZEND_NAMED_FUNCTION(epl_function_chunk)
 {

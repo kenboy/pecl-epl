@@ -99,11 +99,10 @@ PHPAPI ZEND_NAMED_FUNCTION(epl_collect_method_difference)
 
 /* {{{ array difference(array $array, array $... [, array $... ])
  */
-const zend_internal_arg_info arginfo_epl_function_difference[] = {
-	{ (const char*)(zend_uintptr_t)(-1), ZEND_TYPE_ENCODE(IS_ARRAY, 0), ZEND_RETURN_VALUE, 0 },
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_epl_function_difference, ZEND_RETURN_VALUE, -1, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
 	ZEND_ARG_VARIADIC_TYPE_INFO(0, values, IS_ARRAY, 0)
-};
+ZEND_END_ARG_INFO()
 
 PHPAPI ZEND_NAMED_FUNCTION(epl_function_difference)
 {
