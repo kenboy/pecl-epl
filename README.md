@@ -1,6 +1,6 @@
 # EPL - Extended PHP Library
 
-[![Build Status](https://travis-ci.org/kenboy/pecl-epl.svg?branch=master)](https://travis-ci.org/kenboy/pecl-epl) ![Supported PHP versions: 7.2](https://img.shields.io/badge/php-7.2-blue.svg)
+[![Build Status](https://travis-ci.org/kenboy/pecl-epl.svg?branch=master)](https://travis-ci.org/kenboy/pecl-epl) ![Supported PHP versions: 7.3](https://img.shields.io/badge/php-7.3-blue.svg) ![Supported PHP versions: 7.4](https://img.shields.io/badge/php-7.4-blue.svg)
 
 ### Install the extension
 
